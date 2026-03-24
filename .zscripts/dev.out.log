@@ -5512,3 +5512,228 @@ You can learn more, including how to opt-out if you'd not like to participate in
 https://nextjs.org/telemetry
 
 [?25h
+==========================================
+[2026-03-24 11:04:13] Starting: bun install
+==========================================
+[BUN] Installing dependencies...
+[0.08ms] ".env"
+bun install v1.3.10 (30e609e0)
+
+Checked 856 installs across 951 packages (no changes) [52.00ms]
+==========================================
+[2026-03-24 11:04:13] Completed: bun install
+[LOG] Step: bun install | Duration: 0s
+==========================================
+
+==========================================
+[2026-03-24 11:04:13] Starting: bun run db:push
+==========================================
+[BUN] Setting up database...
+$ prisma db push
+Environment variables loaded from .env
+Prisma schema loaded from prisma/schema.prisma
+Datasource "db": SQLite database "custom.db" at "file:/home/z/my-project/db/custom.db"
+
+The database is already in sync with the Prisma schema.
+
+Running generate... (Use --skip-generate to skip the generators)
+[2K[1A[2K[GRunning generate... - Prisma Client
+[2K[1A[2K[G✔ Generated Prisma Client (v6.19.2) to ./node_modules/@prisma/client in 131ms
+
+==========================================
+[2026-03-24 11:04:15] Completed: bun run db:push
+[LOG] Step: bun run db:push | Duration: 2s
+==========================================
+
+==========================================
+[2026-03-24 11:04:15] Starting: Starting Next.js dev server
+==========================================
+[BUN] Starting development server...
+==========================================
+$ next dev -p 3000 2>&1 | tee dev.log
+[2026-03-24 11:04:15] Completed: Starting Next.js dev server
+[LOG] Step: Starting Next.js dev server | Duration: 0s
+==========================================
+
+==========================================
+[2026-03-24 11:04:15] Starting: Waiting for Next.js dev server
+==========================================
+Waiting for Next.js dev server to be ready on localhost:3000...
+Attempt 1/60: Next.js dev server not ready yet, waiting...
+▲ Next.js 16.1.3 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://21.0.2.104:3000
+- Environments: .env
+
+✓ Starting...
+Attention: Next.js now collects completely anonymous telemetry regarding usage.
+This information is used to shape Next.js' roadmap and prioritize features.
+You can learn more, including how to opt-out if you'd not like to participate in this anonymous program, by visiting the following URL:
+https://nextjs.org/telemetry
+
+✓ Ready in 1058ms
+○ Compiling / ...
+Attempt 2/60: Next.js dev server not ready yet, waiting...
+ GET / 200 in 32ms (compile: 3ms, render: 29ms)
+Next.js dev server is ready!
+ GET / 200 in 5.8s (compile: 5.3s, render: 435ms)
+==========================================
+[2026-03-24 11:04:23] Completed: Waiting for Next.js dev server
+[LOG] Step: Waiting for Next.js dev server | Duration: 8s
+==========================================
+
+==========================================
+[2026-03-24 11:04:23] Starting: Health check
+==========================================
+[BUN] Performing health check...
+ GET / 200 in 27ms (compile: 1897µs, render: 25ms)
+[BUN] Health check passed
+==========================================
+[2026-03-24 11:04:23] Completed: Health check
+[LOG] Step: Health check | Duration: 0s
+==========================================
+
+==========================================
+[2026-03-24 11:04:23] Starting: Starting mini-services
+==========================================
+Found mini-services directory, scanning for sub-services...
+Mini-services startup completed. Started 0 service(s).
+==========================================
+[2026-03-24 11:04:23] Completed: Starting mini-services
+[LOG] Step: Starting mini-services | Duration: 0s
+==========================================
+
+Next.js dev server is running in background (PID: 634).
+Use 'kill 634' to stop it.
+ GET / 200 in 26ms (compile: 1730µs, render: 25ms)
+ GET / 200 in 39ms (compile: 2ms, render: 37ms)
+prisma:query SELECT `main`.`ShareHolding`.`id`, `main`.`ShareHolding`.`symbol`, `main`.`ShareHolding`.`company`, `main`.`ShareHolding`.`exchange`, `main`.`ShareHolding`.`sector`, `main`.`ShareHolding`.`entity`, `main`.`ShareHolding`.`qty`, `main`.`ShareHolding`.`avgPrice`, `main`.`ShareHolding`.`cmp`, `main`.`ShareHolding`.`dividendFY`, `main`.`ShareHolding`.`taxType`, `main`.`ShareHolding`.`createdAt`, `main`.`ShareHolding`.`updatedAt` FROM `main`.`ShareHolding` WHERE 1=1 ORDER BY `main`.`ShareHolding`.`createdAt` ASC LIMIT ? OFFSET ?
+prisma:query SELECT `main`.`AppSettings`.`id`, `main`.`AppSettings`.`key`, `main`.`AppSettings`.`value`, `main`.`AppSettings`.`createdAt`, `main`.`AppSettings`.`updatedAt` FROM `main`.`AppSettings` WHERE 1=1 ORDER BY `main`.`AppSettings`.`key` ASC LIMIT ? OFFSET ?
+prisma:query SELECT `main`.`Account`.`id`, `main`.`Account`.`bank`, `main`.`Account`.`name`, `main`.`Account`.`entity`, `main`.`Account`.`balance`, `main`.`Account`.`monthlyInflow`, `main`.`Account`.`monthlyOutflow`, `main`.`Account`.`isAutoFD`, `main`.`Account`.`createdAt`, `main`.`Account`.`updatedAt` FROM `main`.`Account` WHERE 1=1 ORDER BY `main`.`Account`.`createdAt` ASC LIMIT ? OFFSET ?
+prisma:query SELECT `main`.`Transaction`.`id`, `main`.`Transaction`.`date`, `main`.`Transaction`.`description`, `main`.`Transaction`.`account`, `main`.`Transaction`.`category`, `main`.`Transaction`.`debit`, `main`.`Transaction`.`credit`, `main`.`Transaction`.`entity`, `main`.`Transaction`.`aiConfidence`, `main`.`Transaction`.`isTransfer`, `main`.`Transaction`.`createdAt`, `main`.`Transaction`.`updatedAt` FROM `main`.`Transaction` WHERE 1=1 ORDER BY `main`.`Transaction`.`createdAt` DESC LIMIT ? OFFSET ?
+prisma:query SELECT `main`.`MFHolding`.`id`, `main`.`MFHolding`.`name`, `main`.`MFHolding`.`amc`, `main`.`MFHolding`.`category`, `main`.`MFHolding`.`entity`, `main`.`MFHolding`.`units`, `main`.`MFHolding`.`avgNAV`, `main`.`MFHolding`.`currentNAV`, `main`.`MFHolding`.`xirr`, `main`.`MFHolding`.`taxType`, `main`.`MFHolding`.`createdAt`, `main`.`MFHolding`.`updatedAt` FROM `main`.`MFHolding` WHERE 1=1 ORDER BY `main`.`MFHolding`.`createdAt` ASC LIMIT ? OFFSET ?
+prisma:query SELECT `main`.`FixedDeposit`.`id`, `main`.`FixedDeposit`.`accountId`, `main`.`FixedDeposit`.`entity`, `main`.`FixedDeposit`.`principal`, `main`.`FixedDeposit`.`rate`, `main`.`FixedDeposit`.`startDate`, `main`.`FixedDeposit`.`maturityDate`, `main`.`FixedDeposit`.`maturityAmount`, `main`.`FixedDeposit`.`daysLeft`, `main`.`FixedDeposit`.`tdsExpected`, `main`.`FixedDeposit`.`isAutoFD`, `main`.`FixedDeposit`.`status`, `main`.`FixedDeposit`.`createdAt`, `main`.`FixedDeposit`.`updatedAt` FROM `main`.`FixedDeposit` WHERE 1=1 ORDER BY `main`.`FixedDeposit`.`createdAt` ASC LIMIT ? OFFSET ?
+prisma:query SELECT `main`.`Account`.`id`, `main`.`Account`.`bank`, `main`.`Account`.`name`, `main`.`Account`.`entity`, `main`.`Account`.`balance`, `main`.`Account`.`monthlyInflow`, `main`.`Account`.`monthlyOutflow`, `main`.`Account`.`isAutoFD`, `main`.`Account`.`createdAt`, `main`.`Account`.`updatedAt` FROM `main`.`Account` WHERE `main`.`Account`.`id` IN (?,?,?) LIMIT ? OFFSET ?
+ GET /api/share-holdings 200 in 564ms (compile: 375ms, render: 189ms)
+ GET /api/accounts 200 in 571ms (compile: 418ms, render: 154ms)
+ GET /api/settings 200 in 579ms (compile: 453ms, render: 126ms)
+ GET /api/transactions 200 in 580ms (compile: 482ms, render: 98ms)
+ GET /api/mf-holdings 200 in 582ms (compile: 511ms, render: 71ms)
+ GET /api/fds 200 in 587ms (compile: 544ms, render: 44ms)
+ GET / 200 in 61ms (compile: 4ms, render: 57ms)
+ GET /api/accounts 200 in 9ms (compile: 3ms, render: 7ms)
+prisma:query SELECT `main`.`Account`.`id`, `main`.`Account`.`bank`, `main`.`Account`.`name`, `main`.`Account`.`entity`, `main`.`Account`.`balance`, `main`.`Account`.`monthlyInflow`, `main`.`Account`.`monthlyOutflow`, `main`.`Account`.`isAutoFD`, `main`.`Account`.`createdAt`, `main`.`Account`.`updatedAt` FROM `main`.`Account` WHERE 1=1 ORDER BY `main`.`Account`.`createdAt` ASC LIMIT ? OFFSET ?
+ GET /api/mf-holdings 200 in 16ms (compile: 4ms, render: 12ms)
+prisma:query SELECT `main`.`MFHolding`.`id`, `main`.`MFHolding`.`name`, `main`.`MFHolding`.`amc`, `main`.`MFHolding`.`category`, `main`.`MFHolding`.`entity`, `main`.`MFHolding`.`units`, `main`.`MFHolding`.`avgNAV`, `main`.`MFHolding`.`currentNAV`, `main`.`MFHolding`.`xirr`, `main`.`MFHolding`.`taxType`, `main`.`MFHolding`.`createdAt`, `main`.`MFHolding`.`updatedAt` FROM `main`.`MFHolding` WHERE 1=1 ORDER BY `main`.`MFHolding`.`createdAt` ASC LIMIT ? OFFSET ?
+prisma:query SELECT `main`.`Transaction`.`id`, `main`.`Transaction`.`date`, `main`.`Transaction`.`description`, `main`.`Transaction`.`account`, `main`.`Transaction`.`category`, `main`.`Transaction`.`debit`, `main`.`Transaction`.`credit`, `main`.`Transaction`.`entity`, `main`.`Transaction`.`aiConfidence`, `main`.`Transaction`.`isTransfer`, `main`.`Transaction`.`createdAt`, `main`.`Transaction`.`updatedAt` FROM `main`.`Transaction` WHERE 1=1 ORDER BY `main`.`Transaction`.`createdAt` DESC LIMIT ? OFFSET ?
+ GET /api/transactions 200 in 25ms (compile: 9ms, render: 16ms)
+prisma:query SELECT `main`.`FixedDeposit`.`id`, `main`.`FixedDeposit`.`accountId`, `main`.`FixedDeposit`.`entity`, `main`.`FixedDeposit`.`principal`, `main`.`FixedDeposit`.`rate`, `main`.`FixedDeposit`.`startDate`, `main`.`FixedDeposit`.`maturityDate`, `main`.`FixedDeposit`.`maturityAmount`, `main`.`FixedDeposit`.`daysLeft`, `main`.`FixedDeposit`.`tdsExpected`, `main`.`FixedDeposit`.`isAutoFD`, `main`.`FixedDeposit`.`status`, `main`.`FixedDeposit`.`createdAt`, `main`.`FixedDeposit`.`updatedAt` FROM `main`.`FixedDeposit` WHERE 1=1 ORDER BY `main`.`FixedDeposit`.`createdAt` ASC LIMIT ? OFFSET ?
+prisma:query SELECT `main`.`Account`.`id`, `main`.`Account`.`bank`, `main`.`Account`.`name`, `main`.`Account`.`entity`, `main`.`Account`.`balance`, `main`.`Account`.`monthlyInflow`, `main`.`Account`.`monthlyOutflow`, `main`.`Account`.`isAutoFD`, `main`.`Account`.`createdAt`, `main`.`Account`.`updatedAt` FROM `main`.`Account` WHERE `main`.`Account`.`id` IN (?,?,?) LIMIT ? OFFSET ?
+prisma:query SELECT `main`.`AppSettings`.`id`, `main`.`AppSettings`.`key`, `main`.`AppSettings`.`value`, `main`.`AppSettings`.`createdAt`, `main`.`AppSettings`.`updatedAt` FROM `main`.`AppSettings` WHERE 1=1 ORDER BY `main`.`AppSettings`.`key` ASC LIMIT ? OFFSET ?
+ GET /api/fds 200 in 23ms (compile: 10ms, render: 13ms)
+ GET /api/settings 200 in 24ms (compile: 13ms, render: 11ms)
+prisma:query SELECT `main`.`ShareHolding`.`id`, `main`.`ShareHolding`.`symbol`, `main`.`ShareHolding`.`company`, `main`.`ShareHolding`.`exchange`, `main`.`ShareHolding`.`sector`, `main`.`ShareHolding`.`entity`, `main`.`ShareHolding`.`qty`, `main`.`ShareHolding`.`avgPrice`, `main`.`ShareHolding`.`cmp`, `main`.`ShareHolding`.`dividendFY`, `main`.`ShareHolding`.`taxType`, `main`.`ShareHolding`.`createdAt`, `main`.`ShareHolding`.`updatedAt` FROM `main`.`ShareHolding` WHERE 1=1 ORDER BY `main`.`ShareHolding`.`createdAt` ASC LIMIT ? OFFSET ?
+ GET /api/share-holdings 200 in 17ms (compile: 13ms, render: 5ms)
+prisma:query SELECT 1
+prisma:query SELECT `main`.`AppSettings`.`id`, `main`.`AppSettings`.`key`, `main`.`AppSettings`.`value`, `main`.`AppSettings`.`createdAt`, `main`.`AppSettings`.`updatedAt` FROM `main`.`AppSettings` WHERE 1=1 ORDER BY `main`.`AppSettings`.`key` ASC LIMIT ? OFFSET ?
+ GET /api/settings 200 in 10ms (compile: 3ms, render: 7ms)
+ GET / 200 in 45ms (compile: 3ms, render: 42ms)
+ GET /api/settings 200 in 9ms (compile: 2ms, render: 6ms)
+prisma:query SELECT `main`.`AppSettings`.`id`, `main`.`AppSettings`.`key`, `main`.`AppSettings`.`value`, `main`.`AppSettings`.`createdAt`, `main`.`AppSettings`.`updatedAt` FROM `main`.`AppSettings` WHERE 1=1 ORDER BY `main`.`AppSettings`.`key` ASC LIMIT ? OFFSET ?
+prisma:query SELECT `main`.`MFHolding`.`id`, `main`.`MFHolding`.`name`, `main`.`MFHolding`.`amc`, `main`.`MFHolding`.`category`, `main`.`MFHolding`.`entity`, `main`.`MFHolding`.`units`, `main`.`MFHolding`.`avgNAV`, `main`.`MFHolding`.`currentNAV`, `main`.`MFHolding`.`xirr`, `main`.`MFHolding`.`taxType`, `main`.`MFHolding`.`createdAt`, `main`.`MFHolding`.`updatedAt` FROM `main`.`MFHolding` WHERE 1=1 ORDER BY `main`.`MFHolding`.`createdAt` ASC LIMIT ? OFFSET ?
+ GET /api/mf-holdings 200 in 19ms (compile: 2ms, render: 17ms)
+ GET /api/transactions 200 in 20ms (compile: 6ms, render: 14ms)
+prisma:query SELECT `main`.`Transaction`.`id`, `main`.`Transaction`.`date`, `main`.`Transaction`.`description`, `main`.`Transaction`.`account`, `main`.`Transaction`.`category`, `main`.`Transaction`.`debit`, `main`.`Transaction`.`credit`, `main`.`Transaction`.`entity`, `main`.`Transaction`.`aiConfidence`, `main`.`Transaction`.`isTransfer`, `main`.`Transaction`.`createdAt`, `main`.`Transaction`.`updatedAt` FROM `main`.`Transaction` WHERE 1=1 ORDER BY `main`.`Transaction`.`createdAt` DESC LIMIT ? OFFSET ?
+ GET /api/fds 200 in 13ms (compile: 9ms, render: 4ms)
+prisma:query SELECT `main`.`FixedDeposit`.`id`, `main`.`FixedDeposit`.`accountId`, `main`.`FixedDeposit`.`entity`, `main`.`FixedDeposit`.`principal`, `main`.`FixedDeposit`.`rate`, `main`.`FixedDeposit`.`startDate`, `main`.`FixedDeposit`.`maturityDate`, `main`.`FixedDeposit`.`maturityAmount`, `main`.`FixedDeposit`.`daysLeft`, `main`.`FixedDeposit`.`tdsExpected`, `main`.`FixedDeposit`.`isAutoFD`, `main`.`FixedDeposit`.`status`, `main`.`FixedDeposit`.`createdAt`, `main`.`FixedDeposit`.`updatedAt` FROM `main`.`FixedDeposit` WHERE 1=1 ORDER BY `main`.`FixedDeposit`.`createdAt` ASC LIMIT ? OFFSET ?
+prisma:query SELECT `main`.`Account`.`id`, `main`.`Account`.`bank`, `main`.`Account`.`name`, `main`.`Account`.`entity`, `main`.`Account`.`balance`, `main`.`Account`.`monthlyInflow`, `main`.`Account`.`monthlyOutflow`, `main`.`Account`.`isAutoFD`, `main`.`Account`.`createdAt`, `main`.`Account`.`updatedAt` FROM `main`.`Account` WHERE `main`.`Account`.`id` IN (?,?,?) LIMIT ? OFFSET ?
+prisma:query SELECT `main`.`Account`.`id`, `main`.`Account`.`bank`, `main`.`Account`.`name`, `main`.`Account`.`entity`, `main`.`Account`.`balance`, `main`.`Account`.`monthlyInflow`, `main`.`Account`.`monthlyOutflow`, `main`.`Account`.`isAutoFD`, `main`.`Account`.`createdAt`, `main`.`Account`.`updatedAt` FROM `main`.`Account` WHERE 1=1 ORDER BY `main`.`Account`.`createdAt` ASC LIMIT ? OFFSET ?
+ GET /api/accounts 200 in 4ms (compile: 1091µs, render: 3ms)
+prisma:query SELECT `main`.`ShareHolding`.`id`, `main`.`ShareHolding`.`symbol`, `main`.`ShareHolding`.`company`, `main`.`ShareHolding`.`exchange`, `main`.`ShareHolding`.`sector`, `main`.`ShareHolding`.`entity`, `main`.`ShareHolding`.`qty`, `main`.`ShareHolding`.`avgPrice`, `main`.`ShareHolding`.`cmp`, `main`.`ShareHolding`.`dividendFY`, `main`.`ShareHolding`.`taxType`, `main`.`ShareHolding`.`createdAt`, `main`.`ShareHolding`.`updatedAt` FROM `main`.`ShareHolding` WHERE 1=1 ORDER BY `main`.`ShareHolding`.`createdAt` ASC LIMIT ? OFFSET ?
+ GET /api/share-holdings 200 in 5ms (compile: 1049µs, render: 4ms)
+prisma:query SELECT 1
+prisma:query SELECT `main`.`AppSettings`.`id`, `main`.`AppSettings`.`key`, `main`.`AppSettings`.`value`, `main`.`AppSettings`.`createdAt`, `main`.`AppSettings`.`updatedAt` FROM `main`.`AppSettings` WHERE 1=1 ORDER BY `main`.`AppSettings`.`key` ASC LIMIT ? OFFSET ?
+ GET /api/settings 200 in 6ms (compile: 1618µs, render: 4ms)
+ GET /api/settings 200 in 7ms (compile: 1732µs, render: 5ms)
+prisma:query SELECT `main`.`AppSettings`.`id`, `main`.`AppSettings`.`key`, `main`.`AppSettings`.`value`, `main`.`AppSettings`.`createdAt`, `main`.`AppSettings`.`updatedAt` FROM `main`.`AppSettings` WHERE 1=1 ORDER BY `main`.`AppSettings`.`key` ASC LIMIT ? OFFSET ?
+prisma:query SELECT 1
+prisma:query SELECT `main`.`AppSettings`.`id`, `main`.`AppSettings`.`key`, `main`.`AppSettings`.`value`, `main`.`AppSettings`.`createdAt`, `main`.`AppSettings`.`updatedAt` FROM `main`.`AppSettings` WHERE 1=1 ORDER BY `main`.`AppSettings`.`key` ASC LIMIT ? OFFSET ?
+ GET /api/settings 200 in 7ms (compile: 3ms, render: 4ms)
+ GET /api/accounts 200 in 10ms (compile: 1790µs, render: 9ms)
+prisma:query SELECT 1
+prisma:query SELECT `main`.`Account`.`id`, `main`.`Account`.`bank`, `main`.`Account`.`name`, `main`.`Account`.`entity`, `main`.`Account`.`balance`, `main`.`Account`.`monthlyInflow`, `main`.`Account`.`monthlyOutflow`, `main`.`Account`.`isAutoFD`, `main`.`Account`.`createdAt`, `main`.`Account`.`updatedAt` FROM `main`.`Account` WHERE 1=1 ORDER BY `main`.`Account`.`createdAt` ASC LIMIT ? OFFSET ?
+prisma:query SELECT `main`.`Transaction`.`id`, `main`.`Transaction`.`date`, `main`.`Transaction`.`description`, `main`.`Transaction`.`account`, `main`.`Transaction`.`category`, `main`.`Transaction`.`debit`, `main`.`Transaction`.`credit`, `main`.`Transaction`.`entity`, `main`.`Transaction`.`aiConfidence`, `main`.`Transaction`.`isTransfer`, `main`.`Transaction`.`createdAt`, `main`.`Transaction`.`updatedAt` FROM `main`.`Transaction` WHERE 1=1 ORDER BY `main`.`Transaction`.`createdAt` DESC LIMIT ? OFFSET ?
+ GET /api/transactions 200 in 12ms (compile: 5ms, render: 7ms)
+prisma:query SELECT `main`.`ShareHolding`.`id`, `main`.`ShareHolding`.`symbol`, `main`.`ShareHolding`.`company`, `main`.`ShareHolding`.`exchange`, `main`.`ShareHolding`.`sector`, `main`.`ShareHolding`.`entity`, `main`.`ShareHolding`.`qty`, `main`.`ShareHolding`.`avgPrice`, `main`.`ShareHolding`.`cmp`, `main`.`ShareHolding`.`dividendFY`, `main`.`ShareHolding`.`taxType`, `main`.`ShareHolding`.`createdAt`, `main`.`ShareHolding`.`updatedAt` FROM `main`.`ShareHolding` WHERE 1=1 ORDER BY `main`.`ShareHolding`.`createdAt` ASC LIMIT ? OFFSET ?
+ GET /api/share-holdings 200 in 4ms (compile: 1105µs, render: 3ms)
+ GET /api/mf-holdings 200 in 4ms (compile: 1138µs, render: 3ms)
+prisma:query SELECT `main`.`MFHolding`.`id`, `main`.`MFHolding`.`name`, `main`.`MFHolding`.`amc`, `main`.`MFHolding`.`category`, `main`.`MFHolding`.`entity`, `main`.`MFHolding`.`units`, `main`.`MFHolding`.`avgNAV`, `main`.`MFHolding`.`currentNAV`, `main`.`MFHolding`.`xirr`, `main`.`MFHolding`.`taxType`, `main`.`MFHolding`.`createdAt`, `main`.`MFHolding`.`updatedAt` FROM `main`.`MFHolding` WHERE 1=1 ORDER BY `main`.`MFHolding`.`createdAt` ASC LIMIT ? OFFSET ?
+prisma:query SELECT `main`.`FixedDeposit`.`id`, `main`.`FixedDeposit`.`accountId`, `main`.`FixedDeposit`.`entity`, `main`.`FixedDeposit`.`principal`, `main`.`FixedDeposit`.`rate`, `main`.`FixedDeposit`.`startDate`, `main`.`FixedDeposit`.`maturityDate`, `main`.`FixedDeposit`.`maturityAmount`, `main`.`FixedDeposit`.`daysLeft`, `main`.`FixedDeposit`.`tdsExpected`, `main`.`FixedDeposit`.`isAutoFD`, `main`.`FixedDeposit`.`status`, `main`.`FixedDeposit`.`createdAt`, `main`.`FixedDeposit`.`updatedAt` FROM `main`.`FixedDeposit` WHERE 1=1 ORDER BY `main`.`FixedDeposit`.`createdAt` ASC LIMIT ? OFFSET ?
+prisma:query SELECT `main`.`Account`.`id`, `main`.`Account`.`bank`, `main`.`Account`.`name`, `main`.`Account`.`entity`, `main`.`Account`.`balance`, `main`.`Account`.`monthlyInflow`, `main`.`Account`.`monthlyOutflow`, `main`.`Account`.`isAutoFD`, `main`.`Account`.`createdAt`, `main`.`Account`.`updatedAt` FROM `main`.`Account` WHERE `main`.`Account`.`id` IN (?,?,?) LIMIT ? OFFSET ?
+ GET /api/fds 200 in 5ms (compile: 2ms, render: 3ms)
+prisma:query SELECT `main`.`AppSettings`.`id`, `main`.`AppSettings`.`key`, `main`.`AppSettings`.`value`, `main`.`AppSettings`.`createdAt`, `main`.`AppSettings`.`updatedAt` FROM `main`.`AppSettings` WHERE 1=1 ORDER BY `main`.`AppSettings`.`key` ASC LIMIT ? OFFSET ?
+ GET /api/settings 200 in 5ms (compile: 1826µs, render: 3ms)
+prisma:query SELECT 1
+ PUT /api/mf-holdings 200 in 9ms (compile: 1960µs, render: 7ms)
+prisma:query UPDATE `main`.`MFHolding` SET `currentNAV` = ?, `updatedAt` = ? WHERE (`main`.`MFHolding`.`id` = ? AND 1=1) RETURNING `id` AS `id`, `name` AS `name`, `amc` AS `amc`, `category` AS `category`, `entity` AS `entity`, `units` AS `units`, `avgNAV` AS `avgNAV`, `currentNAV` AS `currentNAV`, `xirr` AS `xirr`, `taxType` AS `taxType`, `createdAt` AS `createdAt`, `updatedAt` AS `updatedAt`
+prisma:query UPDATE `main`.`MFHolding` SET `currentNAV` = ?, `updatedAt` = ? WHERE (`main`.`MFHolding`.`id` = ? AND 1=1) RETURNING `id` AS `id`, `name` AS `name`, `amc` AS `amc`, `category` AS `category`, `entity` AS `entity`, `units` AS `units`, `avgNAV` AS `avgNAV`, `currentNAV` AS `currentNAV`, `xirr` AS `xirr`, `taxType` AS `taxType`, `createdAt` AS `createdAt`, `updatedAt` AS `updatedAt`
+ PUT /api/mf-holdings 200 in 9ms (compile: 1725µs, render: 8ms)
+prisma:query SELECT `main`.`MFHolding`.`id`, `main`.`MFHolding`.`name`, `main`.`MFHolding`.`amc`, `main`.`MFHolding`.`category`, `main`.`MFHolding`.`entity`, `main`.`MFHolding`.`units`, `main`.`MFHolding`.`avgNAV`, `main`.`MFHolding`.`currentNAV`, `main`.`MFHolding`.`xirr`, `main`.`MFHolding`.`taxType`, `main`.`MFHolding`.`createdAt`, `main`.`MFHolding`.`updatedAt` FROM `main`.`MFHolding` WHERE 1=1 ORDER BY `main`.`MFHolding`.`createdAt` ASC LIMIT ? OFFSET ?
+ GET /api/mf-holdings 200 in 5ms (compile: 1392µs, render: 4ms)
+prisma:query SELECT `main`.`Account`.`id`, `main`.`Account`.`bank`, `main`.`Account`.`name`, `main`.`Account`.`entity`, `main`.`Account`.`balance`, `main`.`Account`.`monthlyInflow`, `main`.`Account`.`monthlyOutflow`, `main`.`Account`.`isAutoFD`, `main`.`Account`.`createdAt`, `main`.`Account`.`updatedAt` FROM `main`.`Account` WHERE 1=1 ORDER BY `main`.`Account`.`createdAt` ASC LIMIT ? OFFSET ?
+ GET /api/accounts 200 in 5ms (compile: 1147µs, render: 3ms)
+prisma:query SELECT `main`.`Transaction`.`id`, `main`.`Transaction`.`date`, `main`.`Transaction`.`description`, `main`.`Transaction`.`account`, `main`.`Transaction`.`category`, `main`.`Transaction`.`debit`, `main`.`Transaction`.`credit`, `main`.`Transaction`.`entity`, `main`.`Transaction`.`aiConfidence`, `main`.`Transaction`.`isTransfer`, `main`.`Transaction`.`createdAt`, `main`.`Transaction`.`updatedAt` FROM `main`.`Transaction` WHERE 1=1 ORDER BY `main`.`Transaction`.`createdAt` DESC LIMIT ? OFFSET ?
+ GET /api/transactions 200 in 5ms (compile: 1264µs, render: 3ms)
+prisma:query SELECT `main`.`ShareHolding`.`id`, `main`.`ShareHolding`.`symbol`, `main`.`ShareHolding`.`company`, `main`.`ShareHolding`.`exchange`, `main`.`ShareHolding`.`sector`, `main`.`ShareHolding`.`entity`, `main`.`ShareHolding`.`qty`, `main`.`ShareHolding`.`avgPrice`, `main`.`ShareHolding`.`cmp`, `main`.`ShareHolding`.`dividendFY`, `main`.`ShareHolding`.`taxType`, `main`.`ShareHolding`.`createdAt`, `main`.`ShareHolding`.`updatedAt` FROM `main`.`ShareHolding` WHERE 1=1 ORDER BY `main`.`ShareHolding`.`createdAt` ASC LIMIT ? OFFSET ?
+ GET /api/share-holdings 200 in 7ms (compile: 1531µs, render: 6ms)
+prisma:query SELECT `main`.`AppSettings`.`id`, `main`.`AppSettings`.`key`, `main`.`AppSettings`.`value`, `main`.`AppSettings`.`createdAt`, `main`.`AppSettings`.`updatedAt` FROM `main`.`AppSettings` WHERE 1=1 ORDER BY `main`.`AppSettings`.`key` ASC LIMIT ? OFFSET ?
+ GET /api/settings 200 in 5ms (compile: 1285µs, render: 4ms)
+prisma:query SELECT `main`.`FixedDeposit`.`id`, `main`.`FixedDeposit`.`accountId`, `main`.`FixedDeposit`.`entity`, `main`.`FixedDeposit`.`principal`, `main`.`FixedDeposit`.`rate`, `main`.`FixedDeposit`.`startDate`, `main`.`FixedDeposit`.`maturityDate`, `main`.`FixedDeposit`.`maturityAmount`, `main`.`FixedDeposit`.`daysLeft`, `main`.`FixedDeposit`.`tdsExpected`, `main`.`FixedDeposit`.`isAutoFD`, `main`.`FixedDeposit`.`status`, `main`.`FixedDeposit`.`createdAt`, `main`.`FixedDeposit`.`updatedAt` FROM `main`.`FixedDeposit` WHERE 1=1 ORDER BY `main`.`FixedDeposit`.`createdAt` ASC LIMIT ? OFFSET ?
+prisma:query SELECT `main`.`Account`.`id`, `main`.`Account`.`bank`, `main`.`Account`.`name`, `main`.`Account`.`entity`, `main`.`Account`.`balance`, `main`.`Account`.`monthlyInflow`, `main`.`Account`.`monthlyOutflow`, `main`.`Account`.`isAutoFD`, `main`.`Account`.`createdAt`, `main`.`Account`.`updatedAt` FROM `main`.`Account` WHERE `main`.`Account`.`id` IN (?,?,?) LIMIT ? OFFSET ?
+ GET /api/fds 200 in 5ms (compile: 1130µs, render: 4ms)
+prisma:query UPDATE `main`.`MFHolding` SET `currentNAV` = ?, `updatedAt` = ? WHERE (`main`.`MFHolding`.`id` = ? AND 1=1) RETURNING `id` AS `id`, `name` AS `name`, `amc` AS `amc`, `category` AS `category`, `entity` AS `entity`, `units` AS `units`, `avgNAV` AS `avgNAV`, `currentNAV` AS `currentNAV`, `xirr` AS `xirr`, `taxType` AS `taxType`, `createdAt` AS `createdAt`, `updatedAt` AS `updatedAt`
+ PUT /api/mf-holdings 200 in 6ms (compile: 2ms, render: 4ms)
+prisma:query SELECT `main`.`MFHolding`.`id`, `main`.`MFHolding`.`name`, `main`.`MFHolding`.`amc`, `main`.`MFHolding`.`category`, `main`.`MFHolding`.`entity`, `main`.`MFHolding`.`units`, `main`.`MFHolding`.`avgNAV`, `main`.`MFHolding`.`currentNAV`, `main`.`MFHolding`.`xirr`, `main`.`MFHolding`.`taxType`, `main`.`MFHolding`.`createdAt`, `main`.`MFHolding`.`updatedAt` FROM `main`.`MFHolding` WHERE 1=1 ORDER BY `main`.`MFHolding`.`createdAt` ASC LIMIT ? OFFSET ?
+ GET /api/mf-holdings 200 in 5ms (compile: 1268µs, render: 4ms)
+ GET /api/accounts 200 in 19ms (compile: 3ms, render: 16ms)
+prisma:query SELECT `main`.`Account`.`id`, `main`.`Account`.`bank`, `main`.`Account`.`name`, `main`.`Account`.`entity`, `main`.`Account`.`balance`, `main`.`Account`.`monthlyInflow`, `main`.`Account`.`monthlyOutflow`, `main`.`Account`.`isAutoFD`, `main`.`Account`.`createdAt`, `main`.`Account`.`updatedAt` FROM `main`.`Account` WHERE 1=1 ORDER BY `main`.`Account`.`createdAt` ASC LIMIT ? OFFSET ?
+prisma:query SELECT `main`.`Transaction`.`id`, `main`.`Transaction`.`date`, `main`.`Transaction`.`description`, `main`.`Transaction`.`account`, `main`.`Transaction`.`category`, `main`.`Transaction`.`debit`, `main`.`Transaction`.`credit`, `main`.`Transaction`.`entity`, `main`.`Transaction`.`aiConfidence`, `main`.`Transaction`.`isTransfer`, `main`.`Transaction`.`createdAt`, `main`.`Transaction`.`updatedAt` FROM `main`.`Transaction` WHERE 1=1 ORDER BY `main`.`Transaction`.`createdAt` DESC LIMIT ? OFFSET ?
+ GET /api/transactions 200 in 5ms (compile: 1252µs, render: 4ms)
+ GET /api/share-holdings 200 in 15ms (compile: 1311µs, render: 14ms)
+prisma:query SELECT `main`.`ShareHolding`.`id`, `main`.`ShareHolding`.`symbol`, `main`.`ShareHolding`.`company`, `main`.`ShareHolding`.`exchange`, `main`.`ShareHolding`.`sector`, `main`.`ShareHolding`.`entity`, `main`.`ShareHolding`.`qty`, `main`.`ShareHolding`.`avgPrice`, `main`.`ShareHolding`.`cmp`, `main`.`ShareHolding`.`dividendFY`, `main`.`ShareHolding`.`taxType`, `main`.`ShareHolding`.`createdAt`, `main`.`ShareHolding`.`updatedAt` FROM `main`.`ShareHolding` WHERE 1=1 ORDER BY `main`.`ShareHolding`.`createdAt` ASC LIMIT ? OFFSET ?
+prisma:query SELECT `main`.`FixedDeposit`.`id`, `main`.`FixedDeposit`.`accountId`, `main`.`FixedDeposit`.`entity`, `main`.`FixedDeposit`.`principal`, `main`.`FixedDeposit`.`rate`, `main`.`FixedDeposit`.`startDate`, `main`.`FixedDeposit`.`maturityDate`, `main`.`FixedDeposit`.`maturityAmount`, `main`.`FixedDeposit`.`daysLeft`, `main`.`FixedDeposit`.`tdsExpected`, `main`.`FixedDeposit`.`isAutoFD`, `main`.`FixedDeposit`.`status`, `main`.`FixedDeposit`.`createdAt`, `main`.`FixedDeposit`.`updatedAt` FROM `main`.`FixedDeposit` WHERE 1=1 ORDER BY `main`.`FixedDeposit`.`createdAt` ASC LIMIT ? OFFSET ?
+prisma:query SELECT `main`.`Account`.`id`, `main`.`Account`.`bank`, `main`.`Account`.`name`, `main`.`Account`.`entity`, `main`.`Account`.`balance`, `main`.`Account`.`monthlyInflow`, `main`.`Account`.`monthlyOutflow`, `main`.`Account`.`isAutoFD`, `main`.`Account`.`createdAt`, `main`.`Account`.`updatedAt` FROM `main`.`Account` WHERE `main`.`Account`.`id` IN (?,?,?) LIMIT ? OFFSET ?
+ GET /api/fds 200 in 5ms (compile: 1270µs, render: 4ms)
+prisma:query SELECT `main`.`AppSettings`.`id`, `main`.`AppSettings`.`key`, `main`.`AppSettings`.`value`, `main`.`AppSettings`.`createdAt`, `main`.`AppSettings`.`updatedAt` FROM `main`.`AppSettings` WHERE 1=1 ORDER BY `main`.`AppSettings`.`key` ASC LIMIT ? OFFSET ?
+ GET /api/settings 200 in 4ms (compile: 1095µs, render: 3ms)
+prisma:query SELECT `main`.`MFHolding`.`id`, `main`.`MFHolding`.`name`, `main`.`MFHolding`.`amc`, `main`.`MFHolding`.`category`, `main`.`MFHolding`.`entity`, `main`.`MFHolding`.`units`, `main`.`MFHolding`.`avgNAV`, `main`.`MFHolding`.`currentNAV`, `main`.`MFHolding`.`xirr`, `main`.`MFHolding`.`taxType`, `main`.`MFHolding`.`createdAt`, `main`.`MFHolding`.`updatedAt` FROM `main`.`MFHolding` WHERE 1=1 ORDER BY `main`.`MFHolding`.`createdAt` ASC LIMIT ? OFFSET ?
+ GET /api/mf-holdings 200 in 8ms (compile: 2ms, render: 5ms)
+prisma:query UPDATE `main`.`MFHolding` SET `currentNAV` = ?, `updatedAt` = ? WHERE (`main`.`MFHolding`.`id` = ? AND 1=1) RETURNING `id` AS `id`, `name` AS `name`, `amc` AS `amc`, `category` AS `category`, `entity` AS `entity`, `units` AS `units`, `avgNAV` AS `avgNAV`, `currentNAV` AS `currentNAV`, `xirr` AS `xirr`, `taxType` AS `taxType`, `createdAt` AS `createdAt`, `updatedAt` AS `updatedAt`
+ PUT /api/mf-holdings 200 in 7ms (compile: 1688µs, render: 5ms)
+ GET /api/accounts 200 in 6ms (compile: 1780µs, render: 4ms)
+prisma:query SELECT `main`.`Account`.`id`, `main`.`Account`.`bank`, `main`.`Account`.`name`, `main`.`Account`.`entity`, `main`.`Account`.`balance`, `main`.`Account`.`monthlyInflow`, `main`.`Account`.`monthlyOutflow`, `main`.`Account`.`isAutoFD`, `main`.`Account`.`createdAt`, `main`.`Account`.`updatedAt` FROM `main`.`Account` WHERE 1=1 ORDER BY `main`.`Account`.`createdAt` ASC LIMIT ? OFFSET ?
+prisma:query SELECT `main`.`Transaction`.`id`, `main`.`Transaction`.`date`, `main`.`Transaction`.`description`, `main`.`Transaction`.`account`, `main`.`Transaction`.`category`, `main`.`Transaction`.`debit`, `main`.`Transaction`.`credit`, `main`.`Transaction`.`entity`, `main`.`Transaction`.`aiConfidence`, `main`.`Transaction`.`isTransfer`, `main`.`Transaction`.`createdAt`, `main`.`Transaction`.`updatedAt` FROM `main`.`Transaction` WHERE 1=1 ORDER BY `main`.`Transaction`.`createdAt` DESC LIMIT ? OFFSET ?
+ GET /api/transactions 200 in 4ms (compile: 1088µs, render: 3ms)
+prisma:query SELECT `main`.`FixedDeposit`.`id`, `main`.`FixedDeposit`.`accountId`, `main`.`FixedDeposit`.`entity`, `main`.`FixedDeposit`.`principal`, `main`.`FixedDeposit`.`rate`, `main`.`FixedDeposit`.`startDate`, `main`.`FixedDeposit`.`maturityDate`, `main`.`FixedDeposit`.`maturityAmount`, `main`.`FixedDeposit`.`daysLeft`, `main`.`FixedDeposit`.`tdsExpected`, `main`.`FixedDeposit`.`isAutoFD`, `main`.`FixedDeposit`.`status`, `main`.`FixedDeposit`.`createdAt`, `main`.`FixedDeposit`.`updatedAt` FROM `main`.`FixedDeposit` WHERE 1=1 ORDER BY `main`.`FixedDeposit`.`createdAt` ASC LIMIT ? OFFSET ?
+prisma:query SELECT `main`.`Account`.`id`, `main`.`Account`.`bank`, `main`.`Account`.`name`, `main`.`Account`.`entity`, `main`.`Account`.`balance`, `main`.`Account`.`monthlyInflow`, `main`.`Account`.`monthlyOutflow`, `main`.`Account`.`isAutoFD`, `main`.`Account`.`createdAt`, `main`.`Account`.`updatedAt` FROM `main`.`Account` WHERE `main`.`Account`.`id` IN (?,?,?) LIMIT ? OFFSET ?
+ GET /api/fds 200 in 5ms (compile: 1089µs, render: 4ms)
+prisma:query SELECT `main`.`ShareHolding`.`id`, `main`.`ShareHolding`.`symbol`, `main`.`ShareHolding`.`company`, `main`.`ShareHolding`.`exchange`, `main`.`ShareHolding`.`sector`, `main`.`ShareHolding`.`entity`, `main`.`ShareHolding`.`qty`, `main`.`ShareHolding`.`avgPrice`, `main`.`ShareHolding`.`cmp`, `main`.`ShareHolding`.`dividendFY`, `main`.`ShareHolding`.`taxType`, `main`.`ShareHolding`.`createdAt`, `main`.`ShareHolding`.`updatedAt` FROM `main`.`ShareHolding` WHERE 1=1 ORDER BY `main`.`ShareHolding`.`createdAt` ASC LIMIT ? OFFSET ?
+ GET /api/share-holdings 200 in 6ms (compile: 2ms, render: 4ms)
+prisma:query SELECT `main`.`AppSettings`.`id`, `main`.`AppSettings`.`key`, `main`.`AppSettings`.`value`, `main`.`AppSettings`.`createdAt`, `main`.`AppSettings`.`updatedAt` FROM `main`.`AppSettings` WHERE 1=1 ORDER BY `main`.`AppSettings`.`key` ASC LIMIT ? OFFSET ?
+ GET /api/settings 200 in 6ms (compile: 1659µs, render: 5ms)
+prisma:query SELECT `main`.`MFHolding`.`id`, `main`.`MFHolding`.`name`, `main`.`MFHolding`.`amc`, `main`.`MFHolding`.`category`, `main`.`MFHolding`.`entity`, `main`.`MFHolding`.`units`, `main`.`MFHolding`.`avgNAV`, `main`.`MFHolding`.`currentNAV`, `main`.`MFHolding`.`xirr`, `main`.`MFHolding`.`taxType`, `main`.`MFHolding`.`createdAt`, `main`.`MFHolding`.`updatedAt` FROM `main`.`MFHolding` WHERE 1=1 ORDER BY `main`.`MFHolding`.`createdAt` ASC LIMIT ? OFFSET ?
+ GET /api/mf-holdings 200 in 4ms (compile: 1215µs, render: 3ms)
+prisma:query SELECT `main`.`Account`.`id`, `main`.`Account`.`bank`, `main`.`Account`.`name`, `main`.`Account`.`entity`, `main`.`Account`.`balance`, `main`.`Account`.`monthlyInflow`, `main`.`Account`.`monthlyOutflow`, `main`.`Account`.`isAutoFD`, `main`.`Account`.`createdAt`, `main`.`Account`.`updatedAt` FROM `main`.`Account` WHERE 1=1 ORDER BY `main`.`Account`.`createdAt` ASC LIMIT ? OFFSET ?
+ GET /api/accounts 200 in 4ms (compile: 993µs, render: 3ms)
+prisma:query SELECT `main`.`Transaction`.`id`, `main`.`Transaction`.`date`, `main`.`Transaction`.`description`, `main`.`Transaction`.`account`, `main`.`Transaction`.`category`, `main`.`Transaction`.`debit`, `main`.`Transaction`.`credit`, `main`.`Transaction`.`entity`, `main`.`Transaction`.`aiConfidence`, `main`.`Transaction`.`isTransfer`, `main`.`Transaction`.`createdAt`, `main`.`Transaction`.`updatedAt` FROM `main`.`Transaction` WHERE 1=1 ORDER BY `main`.`Transaction`.`createdAt` DESC LIMIT ? OFFSET ?
+ GET /api/transactions 200 in 5ms (compile: 1112µs, render: 3ms)
+ GET /api/fds 200 in 7ms (compile: 1412µs, render: 6ms)
+prisma:query SELECT `main`.`FixedDeposit`.`id`, `main`.`FixedDeposit`.`accountId`, `main`.`FixedDeposit`.`entity`, `main`.`FixedDeposit`.`principal`, `main`.`FixedDeposit`.`rate`, `main`.`FixedDeposit`.`startDate`, `main`.`FixedDeposit`.`maturityDate`, `main`.`FixedDeposit`.`maturityAmount`, `main`.`FixedDeposit`.`daysLeft`, `main`.`FixedDeposit`.`tdsExpected`, `main`.`FixedDeposit`.`isAutoFD`, `main`.`FixedDeposit`.`status`, `main`.`FixedDeposit`.`createdAt`, `main`.`FixedDeposit`.`updatedAt` FROM `main`.`FixedDeposit` WHERE 1=1 ORDER BY `main`.`FixedDeposit`.`createdAt` ASC LIMIT ? OFFSET ?
+prisma:query SELECT `main`.`Account`.`id`, `main`.`Account`.`bank`, `main`.`Account`.`name`, `main`.`Account`.`entity`, `main`.`Account`.`balance`, `main`.`Account`.`monthlyInflow`, `main`.`Account`.`monthlyOutflow`, `main`.`Account`.`isAutoFD`, `main`.`Account`.`createdAt`, `main`.`Account`.`updatedAt` FROM `main`.`Account` WHERE `main`.`Account`.`id` IN (?,?,?) LIMIT ? OFFSET ?
+prisma:query SELECT `main`.`ShareHolding`.`id`, `main`.`ShareHolding`.`symbol`, `main`.`ShareHolding`.`company`, `main`.`ShareHolding`.`exchange`, `main`.`ShareHolding`.`sector`, `main`.`ShareHolding`.`entity`, `main`.`ShareHolding`.`qty`, `main`.`ShareHolding`.`avgPrice`, `main`.`ShareHolding`.`cmp`, `main`.`ShareHolding`.`dividendFY`, `main`.`ShareHolding`.`taxType`, `main`.`ShareHolding`.`createdAt`, `main`.`ShareHolding`.`updatedAt` FROM `main`.`ShareHolding` WHERE 1=1 ORDER BY `main`.`ShareHolding`.`createdAt` ASC LIMIT ? OFFSET ?
+ GET /api/share-holdings 200 in 5ms (compile: 1269µs, render: 4ms)
+prisma:query SELECT `main`.`AppSettings`.`id`, `main`.`AppSettings`.`key`, `main`.`AppSettings`.`value`, `main`.`AppSettings`.`createdAt`, `main`.`AppSettings`.`updatedAt` FROM `main`.`AppSettings` WHERE 1=1 ORDER BY `main`.`AppSettings`.`key` ASC LIMIT ? OFFSET ?
+ GET /api/settings 200 in 5ms (compile: 1180µs, render: 3ms)
+prisma:query SELECT 1
+prisma:query SELECT `main`.`AppSettings`.`id`, `main`.`AppSettings`.`key`, `main`.`AppSettings`.`value`, `main`.`AppSettings`.`createdAt`, `main`.`AppSettings`.`updatedAt` FROM `main`.`AppSettings` WHERE 1=1 ORDER BY `main`.`AppSettings`.`key` ASC LIMIT ? OFFSET ?
+ GET /api/settings 200 in 7ms (compile: 1973µs, render: 6ms)
