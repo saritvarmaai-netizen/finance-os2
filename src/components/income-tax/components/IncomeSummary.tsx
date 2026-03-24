@@ -2,6 +2,7 @@
 
 import React from 'react'
 import { fmt } from '@/lib/utils'
+import { SectionLabel } from '@/components/ui/SectionLabel'
 
 interface IncomeSummaryProps {
   annualSalary: number
@@ -80,14 +81,6 @@ function IncomeSummaryRow({ label, amount, badge, badgeColor, subtitle }: {
         )}
       </div>
       <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text)', fontFamily: '"JetBrains Mono", monospace' }}>{fmt(amount)}</span>
-    </div>
-  )
-}
-
-function SectionLabel({ children }: { children: React.ReactNode }) {
-  return (
-    <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: 16 }}>
-      {children}
     </div>
   )
 }

@@ -1,8 +1,6 @@
 'use client'
 
 import React from 'react'
-import { Pencil, Trash2 } from 'lucide-react'
-import { Card } from '@/components/ui/card'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { EntityBadge } from '@/components/ui/EntityBadge'
 import type { MFHoldingComputed } from '@/lib/types'
@@ -10,16 +8,12 @@ import type { MFHoldingComputed } from '@/lib/types'
 interface MFHoldingsSectionProps {
   holdings: MFHoldingComputed[]
   liveNAV: Record<string, number>
-  onEdit: (holding: MFHoldingComputed) => void
-  onDelete: (id: string, name: string) => void
   formatFn: (val: number) => string
 }
 
 export function MFHoldingsSection({ 
   holdings, 
   liveNAV, 
-  onEdit, 
-  onDelete,
   formatFn 
 }: MFHoldingsSectionProps) {
   
@@ -32,7 +26,14 @@ export function MFHoldingsSection({
   }
 
   return (
-    <Card className="p-0 overflow-hidden">
+    <div 
+      className="overflow-hidden"
+      style={{ 
+        background: 'var(--surface)', 
+        border: '1px solid var(--border)', 
+        borderRadius: 'var(--radius)' 
+      }}
+    >
       <Table>
         <TableHeader>
           <TableRow className="bg-[var(--surface2)] hover:bg-[var(--surface2)]">
@@ -44,7 +45,6 @@ export function MFHoldingsSection({
             <TableHead className="text-[10px] font-semibold tracking-wider uppercase text-[var(--text2)] text-right">XIRR</TableHead>
             <TableHead className="text-[10px] font-semibold tracking-wider uppercase text-[var(--text2)]">Tax</TableHead>
             <TableHead className="text-[10px] font-semibold tracking-wider uppercase text-[var(--text2)]">Entity</TableHead>
-            <TableHead className="text-[10px] font-semibold tracking-wider uppercase text-[var(--text2)] text-center w-20">Actions</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -54,6 +54,9 @@ export function MFHoldingsSection({
               <TableRow 
                 key={h.id || i}
                 className="cursor-pointer"
+                onMouseEnter={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.025)')}
+                onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+                style={{ transition: 'background 0.15s' }}
               >
                 <TableCell className="text-[13px] text-[var(--text2)]">
                   <div style={{ fontWeight: 700, color: 'var(--text)', marginBottom: 4 }}>{h.name}</div>
@@ -97,65 +100,11 @@ export function MFHoldingsSection({
                   }}>{h.taxType}</span>
                 </TableCell>
                 <TableCell className="text-[13px] text-[var(--text2)]"><EntityBadge entity={h.entity} /></TableCell>
-                <TableCell className="text-[13px] text-[var(--text2)]">
-                  <div style={{ display: 'flex', gap: 4, justifyContent: 'center' }}>
-                    <button
-                      onClick={() => onEdit(h)}
-                      style={{
-                        background: 'transparent',
-                        border: '1px solid var(--border)',
-                        borderRadius: 4,
-                        padding: '4px 8px',
-                        cursor: 'pointer',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        transition: 'all 0.15s',
-                      }}
-                      onMouseEnter={(e) => {
-                        e.currentTarget.style.background = 'var(--surface2)'
-                        e.currentTarget.style.borderColor = 'var(--gold)'
-                      }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.background = 'transparent'
-                        e.currentTarget.style.borderColor = 'var(--border)'
-                      }}
-                      title="Edit holding"
-                    >
-                      <Pencil size={12} color="var(--text2)" />
-                    </button>
-                    <button
-                      onClick={() => onDelete(h.id, h.name)}
-                      style={{
-                        background: 'transparent',
-                        border: '1px solid var(--border)',
-                        borderRadius: 4,
-                        padding: '4px 8px',
-                        cursor: 'pointer',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        transition: 'all 0.15s',
-                      }}
-                      onMouseEnter={(e) => {
-                        e.currentTarget.style.background = 'rgba(239,68,68,0.1)'
-                        e.currentTarget.style.borderColor = 'var(--red)'
-                      }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.background = 'transparent'
-                        e.currentTarget.style.borderColor = 'var(--border)'
-                      }}
-                      title="Delete holding"
-                    >
-                      <Trash2 size={12} color="var(--red)" />
-                    </button>
-                  </div>
-                </TableCell>
               </TableRow>
             )
           })}
         </TableBody>
       </Table>
-    </Card>
+    </div>
   )
 }

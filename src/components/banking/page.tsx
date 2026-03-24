@@ -1,30 +1,82 @@
+'use client'
+
 import React, { useState, useMemo } from 'react'
 import { 
   Plus, 
   Sparkles, 
   FileText, 
-  Landmark,
-  Pencil,
-  Trash2
+  Landmark
 } from 'lucide-react'
 import { TabLayout } from '@/components/ui/TabLayout'
 import { EntityBadge } from '@/components/ui/EntityBadge'
+import { SectionLabel } from '@/components/ui/SectionLabel'
 import { fmt } from '@/lib/utils'
 import { useData } from '@/lib/DataContext'
 import { useEntity } from '@/lib/entity-context'
 import { askAI } from '@/lib/ai-client'
 import { AIResponseModal } from '@/components/ui/AIResponseModal'
 import { EmptyState } from '@/components/ui/EmptyState'
-import { AccountDialog } from './components/AccountDialog'
 import { TransactionDialog } from './components/TransactionDialog'
-import { ConfirmDialog } from '@/components/ui/ConfirmDialog'
 import { FDTracker } from './components/FDTracker'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import type { Account, Transaction } from '@/lib/types'
+import { ConfirmDialog } from '@/components/ui/ConfirmDialog'
+import type { Account } from '@/lib/types'
+
+// Input style for inline forms
+const inputStyle: React.CSSProperties = {
+  background: 'var(--surface2)', 
+  border: '1px solid var(--border)',
+  borderRadius: 6, 
+  color: 'var(--text)', 
+  fontFamily: 'inherit',
+  fontSize: 13, 
+  padding: '7px 10px', 
+  outline: 'none', 
+  width: 160,
+}
+
+const selectStyle: React.CSSProperties = {
+  background: 'var(--surface2)', 
+  border: '1px solid var(--border)',
+  borderRadius: 6, 
+  color: 'var(--text)', 
+  fontFamily: 'inherit',
+  fontSize: 13, 
+  padding: '7px 10px', 
+  outline: 'none', 
+  width: 160,
+  cursor: 'pointer',
+}
+
+const labelStyle: React.CSSProperties = {
+  fontSize: 11, 
+  color: 'var(--text2)', 
+  marginBottom: 4,
+  display: 'block',
+}
+
+// Card style for consistent component look
+const cardStyle: React.CSSProperties = {
+  background: 'var(--surface)',
+  border: '1px solid var(--border)',
+  borderRadius: 'var(--radius)',
+}
+
+// Table styles matching Income & Expenses page
+const tableHeaderStyle: React.CSSProperties = {
+  padding: '10px 16px', textAlign: 'left',
+  fontSize: 10, fontWeight: 600, letterSpacing: '0.8px',
+  textTransform: 'uppercase', color: 'var(--text2)',
+  borderBottom: '1px solid var(--border)',
+  background: 'var(--surface2)', whiteSpace: 'nowrap',
+}
+
+const tableCellStyle: React.CSSProperties = {
+  padding: '12px 16px', fontSize: 13, color: 'var(--text2)',
+  borderBottom: '1px solid var(--border)',
+}
 
 export default function BankingPage() {
-  const { accounts, fds, transactions, deleteAccount } = useData()
+  const { accounts, fds, transactions, deleteAccount, addAccount } = useData()
   const { isActive } = useEntity()
 
   const filteredAccounts = useMemo(() => 
@@ -38,12 +90,24 @@ export default function BankingPage() {
 
   const [aiModal, setAiModal] = useState({ open: false, loading: false, response: '', preview: '', mode: 'basic' as const, error: undefined as string | undefined, question: '' })
 
-  // Dialog states
-  const [accountDialogOpen, setAccountDialogOpen] = useState(false)
-  const [transactionDialogOpen, setTransactionDialogOpen] = useState(false)
-  const [editingAccount, setEditingAccount] = useState<Account | null>(null)
+  // Inline Add Account form state
+  const [showAddAccount, setShowAddAccount] = useState(false)
+  const [newAccount, setNewAccount] = useState({
+    bank: '',
+    name: '',
+    entity: 'personal' as 'personal' | 'huf' | 'firm',
+    balance: '',
+    monthlyInflow: '',
+    monthlyOutflow: '',
+  })
+  const [savingAccount, setSavingAccount] = useState(false)
+
+  // Delete confirmation state
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false)
   const [accountToDelete, setAccountToDelete] = useState<Account | null>(null)
+
+  // Transaction dialog state
+  const [transactionDialogOpen, setTransactionDialogOpen] = useState(false)
 
   const runAIAnalysis = async (question: string, skillPath?: string) => {
     setAiModal({ open: true, loading: true, response: '', preview: '', mode: 'basic', error: undefined, question })
@@ -51,14 +115,56 @@ export default function BankingPage() {
     setAiModal(prev => ({ ...prev, loading: false, response: result.response, preview: result.sanitisedPreview, mode: result.mode, error: result.error }))
   }
 
-  const handleAddBankAccount = () => {
-    setEditingAccount(null)
-    setAccountDialogOpen(true)
+  const handleAddAccount = () => {
+    setShowAddAccount(true)
+    setNewAccount({
+      bank: '',
+      name: '',
+      entity: 'personal',
+      balance: '',
+      monthlyInflow: '',
+      monthlyOutflow: '',
+    })
   }
 
-  const handleEditAccount = (account: Account) => {
-    setEditingAccount(account)
-    setAccountDialogOpen(true)
+  const handleSaveAccount = async () => {
+    if (!newAccount.bank || !newAccount.name || !newAccount.balance) return
+    
+    setSavingAccount(true)
+    try {
+      await addAccount({
+        bank: newAccount.bank,
+        name: newAccount.name,
+        entity: newAccount.entity,
+        balance: parseFloat(newAccount.balance) || 0,
+        monthlyInflow: parseFloat(newAccount.monthlyInflow) || 0,
+        monthlyOutflow: parseFloat(newAccount.monthlyOutflow) || 0,
+        isAutoFD: false,
+      })
+      setShowAddAccount(false)
+      setNewAccount({
+        bank: '',
+        name: '',
+        entity: 'personal',
+        balance: '',
+        monthlyInflow: '',
+        monthlyOutflow: '',
+      })
+    } finally {
+      setSavingAccount(false)
+    }
+  }
+
+  const handleCancelAddAccount = () => {
+    setShowAddAccount(false)
+    setNewAccount({
+      bank: '',
+      name: '',
+      entity: 'personal',
+      balance: '',
+      monthlyInflow: '',
+      monthlyOutflow: '',
+    })
   }
 
   const handleDeleteAccount = (account: Account) => {
@@ -82,13 +188,94 @@ export default function BankingPage() {
           title="No bank accounts yet"
           description="Add your first bank account to start tracking your finances. You can import statements or add accounts manually."
           actionLabel="Add Bank Account"
-          onAction={handleAddBankAccount}
+          onAction={handleAddAccount}
         />
-        <AccountDialog
-          open={accountDialogOpen}
-          onOpenChange={setAccountDialogOpen}
-          account={editingAccount}
-        />
+        
+        {/* Inline Add Account Form for empty state */}
+        {showAddAccount && (
+          <div style={{ 
+            background: 'var(--surface)', 
+            border: '1px solid var(--border)', 
+            borderRadius: 'var(--radius)', 
+            padding: 20, 
+            display: 'flex', 
+            gap: 12, 
+            alignItems: 'flex-end', 
+            flexWrap: 'wrap', 
+            marginTop: 24
+          }}>
+            <div>
+              <div style={labelStyle}>Bank Name</div>
+              <input 
+                value={newAccount.bank} 
+                onChange={(e) => setNewAccount(prev => ({ ...prev, bank: e.target.value }))}
+                placeholder="e.g. SBI" 
+                style={inputStyle} 
+              />
+            </div>
+            <div>
+              <div style={labelStyle}>Account Name</div>
+              <input 
+                value={newAccount.name} 
+                onChange={(e) => setNewAccount(prev => ({ ...prev, name: e.target.value }))}
+                placeholder="e.g. Savings" 
+                style={inputStyle} 
+              />
+            </div>
+            <div>
+              <div style={labelStyle}>Entity</div>
+              <select 
+                value={newAccount.entity} 
+                onChange={(e) => setNewAccount(prev => ({ ...prev, entity: e.target.value as 'personal' | 'huf' | 'firm' }))}
+                style={selectStyle}
+              >
+                <option value="personal">Self</option>
+                <option value="huf">HUF</option>
+                <option value="firm">Firm</option>
+              </select>
+            </div>
+            <div>
+              <div style={labelStyle}>Opening Balance</div>
+              <input 
+                type="number" 
+                value={newAccount.balance} 
+                onChange={(e) => setNewAccount(prev => ({ ...prev, balance: e.target.value }))}
+                placeholder="0" 
+                style={{ ...inputStyle, width: 120 }} 
+              />
+            </div>
+            <button 
+              onClick={handleSaveAccount} 
+              disabled={savingAccount || !newAccount.bank || !newAccount.name || !newAccount.balance}
+              style={{ 
+                padding: '8px 18px', 
+                borderRadius: 8, 
+                border: 'none', 
+                background: savingAccount || !newAccount.bank || !newAccount.name || !newAccount.balance ? 'var(--text3)' : 'var(--gold)', 
+                color: '#000', 
+                fontWeight: 700, 
+                fontSize: 13, 
+                cursor: savingAccount || !newAccount.bank || !newAccount.name || !newAccount.balance ? 'not-allowed' : 'pointer' 
+              }}
+            >
+              {savingAccount ? 'Saving...' : 'Save'}
+            </button>
+            <button 
+              onClick={handleCancelAddAccount} 
+              style={{ 
+                padding: '8px 14px', 
+                borderRadius: 8, 
+                border: '1px solid var(--border)', 
+                background: 'transparent', 
+                color: 'var(--text2)', 
+                fontSize: 13, 
+                cursor: 'pointer' 
+              }}
+            >
+              Cancel
+            </button>
+          </div>
+        )}
       </TabLayout>
     )
   }
@@ -106,11 +293,23 @@ export default function BankingPage() {
           </div>
         </div>
         <div style={{ display: 'flex', gap: 12 }}>
-          <button onClick={handleAddBankAccount} style={{
-            background: 'transparent', color: 'var(--text2)', border: '1px solid var(--border)', borderRadius: 'var(--radius)',
-            padding: '10px 20px', fontSize: 13, fontWeight: 700, display: 'flex', alignItems: 'center', gap: 8,
-            cursor: 'pointer', transition: 'all 0.2s'
-          }}>
+          <button 
+            onClick={() => setShowAddAccount(!showAddAccount)} 
+            style={{
+              background: showAddAccount ? 'var(--surface2)' : 'transparent', 
+              color: showAddAccount ? 'var(--text)' : 'var(--text2)', 
+              border: '1px solid var(--border)', 
+              borderRadius: 'var(--radius)',
+              padding: '10px 20px', 
+              fontSize: 13, 
+              fontWeight: 700, 
+              display: 'flex', 
+              alignItems: 'center', 
+              gap: 8,
+              cursor: 'pointer', 
+              transition: 'all 0.2s'
+            }}
+          >
             <Plus size={16} />
             Add Account
           </button>
@@ -133,13 +332,98 @@ export default function BankingPage() {
         </div>
       </div>
 
-      {/* Account Cards */}
+      {/* Inline Add Account Form */}
+      {showAddAccount && (
+        <div style={{ 
+          background: 'var(--surface)', 
+          border: '1px solid var(--border)', 
+          borderRadius: 'var(--radius)', 
+          padding: 20, 
+          display: 'flex', 
+          gap: 12, 
+          alignItems: 'flex-end', 
+          flexWrap: 'wrap', 
+          marginBottom: 32 
+        }}>
+          <div>
+            <div style={labelStyle}>Bank Name</div>
+            <input 
+              value={newAccount.bank} 
+              onChange={(e) => setNewAccount(prev => ({ ...prev, bank: e.target.value }))}
+              placeholder="e.g. SBI" 
+              style={inputStyle} 
+            />
+          </div>
+          <div>
+            <div style={labelStyle}>Account Name</div>
+            <input 
+              value={newAccount.name} 
+              onChange={(e) => setNewAccount(prev => ({ ...prev, name: e.target.value }))}
+              placeholder="e.g. Savings" 
+              style={inputStyle} 
+            />
+          </div>
+          <div>
+            <div style={labelStyle}>Entity</div>
+            <select 
+              value={newAccount.entity} 
+              onChange={(e) => setNewAccount(prev => ({ ...prev, entity: e.target.value as 'personal' | 'huf' | 'firm' }))}
+              style={selectStyle}
+            >
+              <option value="personal">Self</option>
+              <option value="huf">HUF</option>
+              <option value="firm">Firm</option>
+            </select>
+          </div>
+          <div>
+            <div style={labelStyle}>Opening Balance</div>
+            <input 
+              type="number" 
+              value={newAccount.balance} 
+              onChange={(e) => setNewAccount(prev => ({ ...prev, balance: e.target.value }))}
+              placeholder="0" 
+              style={{ ...inputStyle, width: 120 }} 
+            />
+          </div>
+          <button 
+            onClick={handleSaveAccount} 
+            disabled={savingAccount || !newAccount.bank || !newAccount.name || !newAccount.balance}
+            style={{ 
+              padding: '8px 18px', 
+              borderRadius: 8, 
+              border: 'none', 
+              background: savingAccount || !newAccount.bank || !newAccount.name || !newAccount.balance ? 'var(--text3)' : 'var(--gold)', 
+              color: '#000', 
+              fontWeight: 700, 
+              fontSize: 13, 
+              cursor: savingAccount || !newAccount.bank || !newAccount.name || !newAccount.balance ? 'not-allowed' : 'pointer' 
+            }}
+          >
+            {savingAccount ? 'Saving...' : 'Save'}
+          </button>
+          <button 
+            onClick={handleCancelAddAccount} 
+            style={{ 
+              padding: '8px 14px', 
+              borderRadius: 8, 
+              border: '1px solid var(--border)', 
+              background: 'transparent', 
+              color: 'var(--text2)', 
+              fontSize: 13, 
+              cursor: 'pointer' 
+            }}
+          >
+            Cancel
+          </button>
+        </div>
+      )}
+
+      {/* Account Cards - Display only, no edit/delete buttons */}
       <div style={{ display: 'flex', gap: 14, overflowX: 'auto', paddingBottom: 6, marginBottom: 32 }}>
         {filteredAccounts.map((acc) => (
           <AccountCard 
             key={acc.id} 
             acc={acc} 
-            onEdit={handleEditAccount}
             onDelete={handleDeleteAccount}
           />
         ))}
@@ -151,82 +435,88 @@ export default function BankingPage() {
       </div>
 
       {/* Transaction Table */}
-      <Card className="p-0 overflow-hidden">
-        <CardHeader className="pb-2 border-b border-[var(--border)]">
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <CardTitle className="text-[11px] font-semibold tracking-widest uppercase text-[var(--text2)]">
-              Master Ledger
-            </CardTitle>
-            <div style={{ display: 'flex', gap: 10 }}>
-              <button 
-                onClick={() => setTransactionDialogOpen(true)}
-                style={{
-                  background: 'var(--gold)', color: 'var(--bg)', border: 'none', borderRadius: 6,
-                  padding: '6px 12px', fontSize: 12, fontWeight: 700, display: 'flex', alignItems: 'center', gap: 6,
-                  cursor: 'pointer', boxShadow: '0 2px 8px rgba(212,175,55,0.2)'
-                }}
-              >
-                <Plus size={14} />
-                Add Transaction
-              </button>
-              <select
-                style={{
-                  background: 'var(--surface2)', border: '1px solid var(--border)',
-                  color: 'var(--text2)', fontSize: 12, padding: '6px 12px',
-                  borderRadius: 6, outline: 'none', cursor: 'pointer', fontFamily: 'inherit',
-                }}
-              >
-                <option>All Accounts</option>
-                {accounts.map(acc => <option key={acc.id}>{acc.bank} {acc.name}</option>)}
-              </select>
-              <select
-                style={{
-                  background: 'var(--surface2)', border: '1px solid var(--border)',
-                  color: 'var(--text2)', fontSize: 12, padding: '6px 12px',
-                  borderRadius: 6, outline: 'none', cursor: 'pointer', fontFamily: 'inherit',
-                }}
-              >
-                <option>Last 30 Days</option>
-                <option>Last 7 Days</option>
-                <option>This Month</option>
-                <option>This FY</option>
-                <option>Last 3 Months</option>
-                <option>Custom</option>
-              </select>
-            </div>
+      <div style={{ ...cardStyle, padding: 0 }}>
+        <div style={{ padding: '16px 20px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <SectionLabel>Master Ledger</SectionLabel>
+          <div style={{ display: 'flex', gap: 10 }}>
+            <button 
+              onClick={() => setTransactionDialogOpen(true)}
+              style={{
+                background: 'var(--gold)', color: 'var(--bg)', border: 'none', borderRadius: 6,
+                padding: '6px 12px', fontSize: 12, fontWeight: 700, display: 'flex', alignItems: 'center', gap: 6,
+                cursor: 'pointer', boxShadow: '0 2px 8px rgba(212,175,55,0.2)'
+              }}
+            >
+              <Plus size={14} />
+              Add Transaction
+            </button>
+            <select
+              style={{
+                background: 'var(--surface2)', border: '1px solid var(--border)',
+                color: 'var(--text2)', fontSize: 12, padding: '6px 12px',
+                borderRadius: 6, outline: 'none', cursor: 'pointer', fontFamily: 'inherit',
+              }}
+            >
+              <option>All Accounts</option>
+              {accounts.map(acc => <option key={acc.id}>{acc.bank} {acc.name}</option>)}
+            </select>
+            <select
+              style={{
+                background: 'var(--surface2)', border: '1px solid var(--border)',
+                color: 'var(--text2)', fontSize: 12, padding: '6px 12px',
+                borderRadius: 6, outline: 'none', cursor: 'pointer', fontFamily: 'inherit',
+              }}
+            >
+              <option>Last 30 Days</option>
+              <option>Last 7 Days</option>
+              <option>This Month</option>
+              <option>This FY</option>
+              <option>Last 3 Months</option>
+              <option>Custom</option>
+            </select>
           </div>
-        </CardHeader>
-        <CardContent className="p-0">
-          <Table>
-            <TableHeader>
-              <TableRow className="bg-[var(--surface2)] hover:bg-[var(--surface2)]">
-                <TableHead className="text-[10px] font-semibold tracking-wider uppercase text-[var(--text2)]">Date</TableHead>
-                <TableHead className="text-[10px] font-semibold tracking-wider uppercase text-[var(--text2)]">Description</TableHead>
-                <TableHead className="text-[10px] font-semibold tracking-wider uppercase text-[var(--text2)]">Account</TableHead>
-                <TableHead className="text-[10px] font-semibold tracking-wider uppercase text-[var(--text2)]">Category</TableHead>
-                <TableHead className="text-[10px] font-semibold tracking-wider uppercase text-[var(--text2)] text-right">Debit</TableHead>
-                <TableHead className="text-[10px] font-semibold tracking-wider uppercase text-[var(--text2)] text-right">Credit</TableHead>
-                <TableHead className="text-[10px] font-semibold tracking-wider uppercase text-[var(--text2)]">Entity</TableHead>
-                <TableHead className="text-[10px] font-semibold tracking-wider uppercase text-[var(--text2)] text-right">AI Conf.</TableHead>
-                <TableHead className="text-[10px] font-semibold tracking-wider uppercase text-[var(--text2)]">Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {filteredTransactions.map((tx) => (
-                <TransactionRow key={tx.id} tx={tx} />
+        </div>
+        <div style={{ overflowX: 'auto' }}>
+          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+            <thead>
+              <tr>
+                <th style={tableHeaderStyle}>Date</th>
+                <th style={tableHeaderStyle}>Description</th>
+                <th style={tableHeaderStyle}>Account</th>
+                <th style={tableHeaderStyle}>Category</th>
+                <th style={{ ...tableHeaderStyle, textAlign: 'right' }}>Debit</th>
+                <th style={{ ...tableHeaderStyle, textAlign: 'right' }}>Credit</th>
+                <th style={tableHeaderStyle}>Entity</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filteredTransactions.map((tx, i) => (
+                <tr 
+                  key={tx.id || i}
+                  onClick={() => setTransactionDialogOpen(true)}
+                  onMouseEnter={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.025)')}
+                  onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+                  style={{ cursor: 'pointer', transition: 'background 0.15s' }}
+                >
+                  <td style={tableCellStyle}>{tx.date}</td>
+                  <td style={{ ...tableCellStyle, fontWeight: 600 }}>{tx.description}</td>
+                  <td style={tableCellStyle}>{tx.account}</td>
+                  <td style={tableCellStyle}><CategoryBadge category={tx.category} /></td>
+                  <td style={{ ...tableCellStyle, textAlign: 'right', fontFamily: '"JetBrains Mono", monospace', color: tx.debit > 0 ? 'var(--red)' : 'var(--text3)' }}>
+                    {tx.debit > 0 ? fmt(tx.debit) : '—'}
+                  </td>
+                  <td style={{ ...tableCellStyle, textAlign: 'right', fontFamily: '"JetBrains Mono", monospace', color: tx.credit > 0 ? 'var(--green)' : 'var(--text3)' }}>
+                    {tx.credit > 0 ? fmt(tx.credit) : '—'}
+                  </td>
+                  <td style={tableCellStyle}><EntityBadge entity={tx.entity} /></td>
+                </tr>
               ))}
-            </TableBody>
-          </Table>
-        </CardContent>
-      </Card>
+            </tbody>
+          </table>
+        </div>
+      </div>
 
       {/* Dialogs */}
-      <AccountDialog
-        open={accountDialogOpen}
-        onOpenChange={setAccountDialogOpen}
-        account={editingAccount}
-      />
-      
       <TransactionDialog
         open={transactionDialogOpen}
         onOpenChange={setTransactionDialogOpen}
@@ -256,9 +546,10 @@ export default function BankingPage() {
   )
 }
 
-// Account Card Component with Edit/Delete
-function AccountCard({ acc, onEdit, onDelete }: { acc: Account; onEdit: (acc: Account) => void; onDelete: (acc: Account) => void }) {
+// Account Card Component - Display only, no edit/delete buttons on hover
+function AccountCard({ acc, onDelete }: { acc: Account; onDelete: (acc: Account) => void }) {
   const [isHovered, setIsHovered] = useState(false)
+  const [showActions, setShowActions] = useState(false)
   const colors: Record<string, string> = {
     personal: 'var(--personal)',
     huf: 'var(--green)',
@@ -268,7 +559,8 @@ function AccountCard({ acc, onEdit, onDelete }: { acc: Account; onEdit: (acc: Ac
   return (
     <div 
       onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
+      onMouseLeave={() => { setIsHovered(false); setShowActions(false); }}
+      onClick={() => setShowActions(!showActions)}
       style={{
         minWidth: 280, flex: '0 0 auto',
         background: 'var(--surface)',
@@ -283,47 +575,46 @@ function AccountCard({ acc, onEdit, onDelete }: { acc: Account; onEdit: (acc: Ac
         position: 'relative'
       }}
     >
-      {/* Edit/Delete buttons on hover */}
-      {isHovered && (
+      {/* Click to reveal actions menu */}
+      {showActions && (
         <div style={{
           position: 'absolute',
-          top: 12,
-          right: 12,
+          top: 8,
+          right: 8,
           display: 'flex',
           gap: 4,
           zIndex: 10
         }}>
           <button
-            onClick={(e) => { e.stopPropagation(); onEdit(acc); }}
-            style={{
-              background: 'var(--surface2)',
-              border: '1px solid var(--border)',
-              borderRadius: 4,
-              padding: 4,
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center'
-            }}
-            title="Edit"
-          >
-            <Pencil size={14} color="var(--text2)" />
-          </button>
-          <button
             onClick={(e) => { e.stopPropagation(); onDelete(acc); }}
             style={{
-              background: 'var(--surface2)',
-              border: '1px solid var(--border)',
+              background: 'var(--red)',
+              border: 'none',
               borderRadius: 4,
-              padding: 4,
+              padding: '4px 10px',
               cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center'
+              fontSize: 11,
+              fontWeight: 600,
+              color: 'white',
             }}
             title="Delete"
           >
-            <Trash2 size={14} color="var(--red)" />
+            Delete
+          </button>
+          <button
+            onClick={(e) => { e.stopPropagation(); setShowActions(false); }}
+            style={{
+              background: 'var(--surface2)',
+              border: '1px solid var(--border)',
+              borderRadius: 4,
+              padding: '4px 10px',
+              cursor: 'pointer',
+              fontSize: 11,
+              fontWeight: 600,
+              color: 'var(--text2)',
+            }}
+          >
+            Cancel
           </button>
         </div>
       )}
@@ -363,88 +654,7 @@ function AccountCard({ acc, onEdit, onDelete }: { acc: Account; onEdit: (acc: Ac
   )
 }
 
-// Transaction Row Component with Delete
-function TransactionRow({ tx }: { tx: { 
-  id: string; 
-  date: string; 
-  description: string; 
-  account: string; 
-  category: string; 
-  debit: number; 
-  credit: number; 
-  entity: string; 
-  aiConfidence: number;
-  isTransfer: boolean;
-} }) {
-  const { deleteTransaction } = useData()
-  const [isHovered, setIsHovered] = useState(false)
-  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false)
-
-  const handleDelete = async () => {
-    await deleteTransaction(tx.id)
-  }
-
-  return (
-    <>
-      <TableRow 
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
-        className="cursor-pointer"
-      >
-        <TableCell className="text-[13px] text-[var(--text2)]">{tx.date}</TableCell>
-        <TableCell className="text-[13px] text-[var(--text2)] font-semibold">{tx.description}</TableCell>
-        <TableCell className="text-[13px] text-[var(--text2)]">{tx.account}</TableCell>
-        <TableCell className="text-[13px] text-[var(--text2)]"><CategoryBadge category={tx.category} /></TableCell>
-        <TableCell className="text-[13px] text-right font-mono" style={{ color: tx.debit > 0 ? 'var(--red)' : 'var(--text3)' }}>
-          {tx.debit > 0 ? fmt(tx.debit) : '—'}
-        </TableCell>
-        <TableCell className="text-[13px] text-right font-mono" style={{ color: tx.credit > 0 ? 'var(--green)' : 'var(--text3)' }}>
-          {tx.credit > 0 ? fmt(tx.credit) : '—'}
-        </TableCell>
-        <TableCell className="text-[13px] text-[var(--text2)]"><EntityBadge entity={tx.entity} /></TableCell>
-        <TableCell className="text-[13px] text-right">
-          <span style={{ 
-            fontSize: 11, fontWeight: 700, 
-            color: tx.aiConfidence >= 90 ? 'var(--green)' : tx.aiConfidence >= 70 ? 'var(--amber)' : 'var(--red)'
-          }}>
-            {tx.aiConfidence}%
-          </span>
-        </TableCell>
-        <TableCell className="text-[13px] text-[var(--text2)]">
-          {isHovered && (
-            <button
-              onClick={(e) => { e.stopPropagation(); setDeleteConfirmOpen(true); }}
-              style={{
-                background: 'transparent',
-                border: 'none',
-                borderRadius: 4,
-                padding: 4,
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center'
-              }}
-              title="Delete"
-            >
-              <Trash2 size={14} color="var(--red)" />
-            </button>
-          )}
-        </TableCell>
-      </TableRow>
-      
-      <ConfirmDialog
-        open={deleteConfirmOpen}
-        onOpenChange={setDeleteConfirmOpen}
-        title="Delete Transaction"
-        message={`Are you sure you want to delete "${tx.description}"? This action cannot be undone.`}
-        confirmLabel="Delete"
-        onConfirm={handleDelete}
-        variant="destructive"
-      />
-    </>
-  )
-}
-
+// CategoryBadge component for transaction categories
 function CategoryBadge({ category }: { category: string }) {
   const styles: Record<string, { color: string; bg: string }> = {
     Investment: { color: 'var(--blue)', bg: 'rgba(59,130,246,0.1)' },

@@ -8,7 +8,6 @@ import { useData } from '@/lib/DataContext'
 import { useEntity } from '@/lib/entity-context'
 import { askAI } from '@/lib/ai-client'
 import { AIResponseModal } from '@/components/ui/AIResponseModal'
-import { audit } from '@/lib/audit'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { fmt } from '@/lib/format'
 
@@ -18,13 +17,14 @@ import { MFSummaryBar } from './components/MFSummaryBarNew'
 import { MFHoldingsSection } from './components/MFHoldingsSection'
 import { MFLiveStatusIndicator } from './components/MFLiveStatusIndicator'
 import { MFWaterfallSection } from './components/MFWaterfallSection'
-import { MFDialogManager, type MFEditData } from './components/MFDialogManager'
+import { MFInlineAddFund } from './components/MFInlineAddFund'
 
 export default function MutualFundsPage() {
   // State
   const [navLoading, setNavLoading] = useState(false)
   const [liveNAV, setLiveNAV] = useState<Record<string, number>>({})
   const [lastUpdated, setLastUpdated] = useState<string | null>(null)
+  const [showAddFund, setShowAddFund] = useState(false)
   const [aiModal, setAiModal] = useState({ 
     open: false, 
     loading: false, 
@@ -34,18 +34,9 @@ export default function MutualFundsPage() {
     error: undefined as string | undefined, 
     question: '' 
   })
-  
-  // Dialog states
-  const [dialogOpen, setDialogOpen] = useState(false)
-  const [editData, setEditData] = useState<MFEditData | null>(null)
-  const [deleteConfirm, setDeleteConfirm] = useState<{ open: boolean; id: string; name: string }>({ 
-    open: false, 
-    id: '', 
-    name: '' 
-  })
 
   // Data hooks
-  const { mfHoldings: holdings, mfTotals: totals, updateMFNav, ltcg, deleteMFHolding } = useData()
+  const { mfHoldings: holdings, mfTotals: totals, updateMFNav, ltcg } = useData()
   const { isActive } = useEntity()
 
   // Filtered holdings based on entity
@@ -74,31 +65,7 @@ export default function MutualFundsPage() {
 
   // Handlers
   const handleAddFund = () => {
-    setEditData(null)
-    setDialogOpen(true)
-  }
-
-  const handleEditFund = (holding: typeof holdings[0]) => {
-    setEditData({
-      id: holding.id,
-      name: holding.name,
-      amc: holding.amc,
-      category: holding.category,
-      entity: holding.entity,
-      units: holding.units,
-      avgNAV: holding.avgNAV,
-      currentNAV: holding.currentNAV,
-      xirr: holding.xirr,
-      taxType: holding.taxType,
-    })
-    setDialogOpen(true)
-  }
-
-  const handleDeleteFund = async () => {
-    if (deleteConfirm.id) {
-      await deleteMFHolding(deleteConfirm.id)
-      setDeleteConfirm({ open: false, id: '', name: '' })
-    }
+    setShowAddFund(true)
   }
 
   // Live NAV fetch
@@ -133,17 +100,7 @@ export default function MutualFundsPage() {
       Object.entries(results).forEach(([name, nav]) => {
         const h = holdings.find(h => h.name === name)
         if (h) {
-          const oldNav = h.currentNAV
           updateMFNav(h.id, nav)
-          audit.log({
-            action: 'UPDATE',
-            category: 'mutual_funds',
-            description: `Live NAV refreshed — ${name}`,
-            before: { nav: oldNav },
-            after:  { nav },
-            impact: oldNav ? `NAV changed by ${((nav - oldNav) / oldNav * 100).toFixed(2)}%` : undefined,
-            source: 'live_api',
-          })
         }
       })
 
@@ -183,16 +140,7 @@ export default function MutualFundsPage() {
           actionLabel="Add Fund"
           onAction={handleAddFund}
         />
-        <MFDialogManager
-          dialogOpen={dialogOpen}
-          deleteConfirmOpen={false}
-          editData={editData}
-          deleteConfirm={deleteConfirm}
-          setDialogOpen={setDialogOpen}
-          setEditData={setEditData}
-          setDeleteConfirm={setDeleteConfirm}
-          onDeleteConfirm={handleDeleteFund}
-        />
+        <MFInlineAddFund visible={showAddFund} onClose={() => setShowAddFund(false)} />
       </TabLayout>
     )
   }
@@ -212,6 +160,9 @@ export default function MutualFundsPage() {
           'mutual-funds/recommendations.md'
         )}
       />
+
+      {/* Inline Add Fund Form */}
+      <MFInlineAddFund visible={showAddFund} onClose={() => setShowAddFund(false)} />
 
       {/* Summary Bar */}
       <MFSummaryBar
@@ -234,8 +185,6 @@ export default function MutualFundsPage() {
         <MFHoldingsSection
           holdings={filteredHoldings}
           liveNAV={liveNAV}
-          onEdit={handleEditFund}
-          onDelete={(id, name) => setDeleteConfirm({ open: true, id, name })}
           formatFn={fmt}
         />
 
@@ -253,18 +202,6 @@ export default function MutualFundsPage() {
         mode={aiModal.mode}
         error={aiModal.error}
         question={aiModal.question}
-      />
-      
-      {/* Dialog Manager */}
-      <MFDialogManager
-        dialogOpen={dialogOpen}
-        deleteConfirmOpen={deleteConfirm.open}
-        editData={editData}
-        deleteConfirm={deleteConfirm}
-        setDialogOpen={setDialogOpen}
-        setEditData={setEditData}
-        setDeleteConfirm={setDeleteConfirm}
-        onDeleteConfirm={handleDeleteFund}
       />
     </TabLayout>
   )

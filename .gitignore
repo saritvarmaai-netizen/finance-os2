@@ -49,3 +49,24 @@ prompt
 server.log
 # Skills directory
 /skills/
+
+# Database files (user data)
+*.db
+*.db-journal
+db/*.db
+
+# Upload/download directories
+upload/
+download/
+
+# Agent context
+agent-ctx/
+
+# Worklog
+worklog.md
+
+# Mini services (development)
+mini-services/
+
+# Scripts
+.zscripts/

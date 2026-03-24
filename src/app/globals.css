@@ -8,6 +8,7 @@
 }
 
 :root {
+  /* Main colors (hex for inline styles - used by custom components) */
   --bg: #070b12;
   --surface: #0e1420;
   --surface2: #141c2e;
@@ -16,9 +17,9 @@
   --border2: #243355;
   --gold: #f0a500;
   --gold-dim: #a87200;
-  --personal: #818cf8; /* Self entity colour */
-  --huf: #34d399; /* HUF entity colour */
-  --firm: #fb923c; /* Firm entity colour */
+  --personal: #818cf8;
+  --huf: #34d399;
+  --firm: #fb923c;
   --text: #e8edf5;
   --text2: #8896ae;
   --text3: #4a5568;
@@ -26,28 +27,51 @@
   --red: #f43f5e;
   --amber: #fbbf24;
   --blue: #38bdf8;
+  
+  /* HSL values for Tailwind/shadcn (raw values without hsl() wrapper) */
+  --bg-hsl: 217 56% 5%;
+  --surface-hsl: 217 47% 9%;
+  --surface2-hsl: 217 41% 13%;
+  --surface3-hsl: 217 41% 17%;
+  --border-hsl: 217 39% 19%;
+  --border2-hsl: 218 41% 24%;
+  --gold-hsl: 42 96% 47%;
+  --gold-dim-hsl: 38 70% 33%;
+  --personal-hsl: 239 84% 75%;
+  --huf-hsl: 160 60% 52%;
+  --firm-hsl: 28 96% 61%;
+  --text-hsl: 220 42% 94%;
+  --text2-hsl: 222 23% 61%;
+  --text3-hsl: 217 16% 35%;
+  --green-hsl: 142 71% 45%;
+  --red-hsl: 350 89% 60%;
+  --amber-hsl: 45 97% 56%;
+  --blue-hsl: 199 89% 60%;
+  
   --radius: 12px;
   --radius-sm: 8px;
   
-  /* shadcn compatibility */
-  --background: var(--bg);
-  --foreground: var(--text);
-  --card: var(--surface);
-  --card-foreground: var(--text);
-  --popover: var(--surface);
-  --popover-foreground: var(--text);
-  --primary: var(--gold);
-  --primary-foreground: var(--bg);
-  --secondary: var(--surface2);
-  --secondary-foreground: var(--text);
-  --muted: var(--surface2);
-  --muted-foreground: var(--text2);
-  --accent: var(--surface3);
-  --accent-foreground: var(--text);
-  --destructive: var(--red);
-  --border: var(--border);
-  --input: var(--surface2);
-  --ring: var(--gold);
+  /* shadcn compatibility - map to HSL values */
+  --background: var(--bg-hsl);
+  --foreground: var(--text-hsl);
+  --card: var(--surface-hsl);
+  --card-foreground: var(--text-hsl);
+  --popover: var(--surface-hsl);
+  --popover-foreground: var(--text-hsl);
+  --primary: var(--gold-hsl);
+  --primary-foreground: var(--bg-hsl);
+  --secondary: var(--surface2-hsl);
+  --secondary-foreground: var(--text-hsl);
+  --muted: var(--surface2-hsl);
+  --muted-foreground: var(--text2-hsl);
+  --accent: var(--surface3-hsl);
+  --accent-foreground: var(--text-hsl);
+  --destructive: var(--red-hsl);
+  --input: var(--surface2-hsl);
+  --ring: var(--gold-hsl);
+  
+  /* Border color for Tailwind */
+  --border-tailwind: var(--border-hsl);
 }
 
 body {
@@ -86,7 +110,7 @@ h1, h2, h3, .font-playfair {
 
 @layer base {
   * {
-    border-color: var(--border);
+    border-color: hsl(var(--border-hsl));
   }
 }
 

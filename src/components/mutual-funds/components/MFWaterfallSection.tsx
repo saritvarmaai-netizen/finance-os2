@@ -2,8 +2,8 @@
 
 import React from 'react'
 import { ShieldAlert } from 'lucide-react'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { fmt } from '@/lib/format'
+import { SectionLabel } from '@/components/ui/SectionLabel'
+import { fmt } from '@/lib/utils'
 
 interface MFWaterfallSectionProps {
   ltcg: {
@@ -35,13 +35,11 @@ export function MFWaterfallSection({ ltcg }: MFWaterfallSectionProps) {
       </div>
 
       {/* 2. LTCG Progress Card */}
-      <Card>
-        <CardHeader className="pb-2">
-          <CardTitle className="text-[11px] font-semibold tracking-widest uppercase text-[var(--text2)]">
-            LTCG Booked This FY
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
+      <div style={cardStyle}>
+        <div style={{ padding: '16px 20px', borderBottom: '1px solid var(--border)' }}>
+          <SectionLabel>LTCG Booked This FY</SectionLabel>
+        </div>
+        <div style={{ padding: '16px 20px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: 12 }}>
             <span style={{ fontSize: 12, color: 'var(--text3)', fontWeight: 600 }}>Booked</span>
             <span style={{ fontSize: 16, fontWeight: 700, color: 'var(--text)', fontFamily: '"JetBrains Mono", monospace' }}>
@@ -52,35 +50,31 @@ export function MFWaterfallSection({ ltcg }: MFWaterfallSectionProps) {
             <div style={{ width: `${(ltcg.booked / ltcg.limit) * 100}%`, height: '100%', background: 'linear-gradient(90deg, var(--green), var(--gold))' }} />
           </div>
           <div style={{ fontSize: 11, color: 'var(--text3)', fontWeight: 500 }}>{((ltcg.booked / ltcg.limit) * 100).toFixed(0)}% of {fmt(ltcg.limit)} annual limit used</div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
 
       {/* 3. Portfolio Overlap Card */}
-      <Card>
-        <CardHeader className="pb-2">
+      <div style={cardStyle}>
+        <div style={{ padding: '16px 20px', borderBottom: '1px solid var(--border)' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <ShieldAlert size={14} color="var(--amber)" />
-            <CardTitle className="text-[11px] font-semibold tracking-widest uppercase text-[var(--text2)]">
-              Portfolio Overlap Warning
-            </CardTitle>
+            <SectionLabel>Portfolio Overlap Warning</SectionLabel>
           </div>
-        </CardHeader>
-        <CardContent>
+        </div>
+        <div style={{ padding: '16px 20px' }}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
             <OverlapRow label="PPFCF ↔ Mirae Large Cap" value="42% amber" percent={42} color="var(--amber)" />
             <OverlapRow label="Mirae Large ↔ HDFC Mid Cap" value="18% green" percent={18} color="var(--green)" />
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
 
       {/* 4. Rebalancing Alert Card */}
-      <Card>
-        <CardHeader className="pb-2">
-          <CardTitle className="text-[11px] font-semibold tracking-widest uppercase text-[var(--text2)]">
-            Rebalancing Alert
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
+      <div style={cardStyle}>
+        <div style={{ padding: '16px 20px', borderBottom: '1px solid var(--border)' }}>
+          <SectionLabel>Rebalancing Alert</SectionLabel>
+        </div>
+        <div style={{ padding: '16px 20px' }}>
           <div style={{ marginBottom: 20 }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
               <span style={{ fontSize: 12, color: 'var(--text2)' }}>Equity: current 72%, target 65%</span>
@@ -103,8 +97,8 @@ export function MFWaterfallSection({ ltcg }: MFWaterfallSectionProps) {
           }}>
             Equity at 72% vs target 65%. Add ₹2.5L to debt fund to rebalance.
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </div>
   )
 }
@@ -121,6 +115,13 @@ function OverlapRow({ label, value, percent, color }: { label: string; value: st
       </div>
     </div>
   )
+}
+
+const cardStyle: React.CSSProperties = {
+  background: 'var(--surface)',
+  border: '1px solid var(--border)',
+  borderRadius: 'var(--radius)',
+  overflow: 'hidden',
 }
 
 const aiInsightBoxStyle: React.CSSProperties = {

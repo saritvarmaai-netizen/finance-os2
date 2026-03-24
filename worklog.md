@@ -2516,3 +2516,921 @@ settings/page.tsx (306 lines)
 - All components render correctly
 - State management works as expected
 - No runtime errors in dev log
+
+---
+## Task ID: 16-b - Project Comparison Agent
+### Work Task
+Compare the GitHub repo (`/tmp/Finacne-OS`) with our current Next.js project (`/home/z/my-project`). Compare Dashboard, Banking, Mutual Funds, Shares, Settings, and Global Styles.
+
+### Work Summary
+
+## 1. DASHBOARD COMPARISON
+
+### File Locations
+| Component | GitHub Repo | Next.js Project |
+|-----------|-------------|-----------------|
+| Main Page | `/tmp/Finacne-OS/src/dashboard/page.tsx` | `/home/z/my-project/src/components/dashboard/page.tsx` |
+
+### UI & Features Differences
+
+| Feature | GitHub Repo | Next.js Project | Difference |
+|---------|-------------|-----------------|------------|
+| **Navigation** | Uses `react-router-dom` `<Link to="/income-expenses">` | No navigation link (span with cursor) | Next.js missing navigation routing |
+| **Tax Calculation** | Full tax slab implementation with new/old regime comparison (lines 84-108) | Simplified tax calc: `newRegimeTax = newRegimeTaxable * 0.2` (line 86) | Next.js has simplified/inaccurate tax calc |
+| **SectionLabelStyle** | Inline style object defined locally | Uses `<SectionLabel>` component | Next.js has extracted component |
+| **Welcome State** | No empty state | Has `WelcomeEmptyState` component for new users | Next.js has better empty state handling |
+| **Derived Values** | Inline calculations in JSX | Uses `useMemo` for computed values | Next.js has optimized re-renders |
+| **Firm Salary Calc** | Has separate `monthlyFirmSalary` calculation (lines 74-75) | Hardcoded fallback `420000` | GitHub has more accurate firm income calculation |
+| **Data Guard** | No explicit empty data guard | Has `hasNoData` check with early return | Next.js has better null state handling |
+
+### Styling Differences
+- **Both use identical inline styles** with same `cardStyle`, `sectionLabelStyle`, `tableHeaderStyle`, `tableCellStyle`
+- **Both use same CSS variables**: `var(--surface)`, `var(--gold)`, `var(--text)`, etc.
+- **Color coding identical**: Green for income, Red for expenses, Gold for highlights
+
+---
+
+## 2. BANKING COMPARISON
+
+### File Locations
+| Component | GitHub Repo | Next.js Project |
+|-----------|-------------|-----------------|
+| Main Page | `/tmp/Finacne-OS/src/banking/page.tsx` | `/home/z/my-project/src/components/banking/page.tsx` |
+| Account Cards | Inline `AccountCard` component | Separate `AccountCards.tsx` component |
+| FD Tracker | Inline in page | Separate `FDTracker.tsx` component |
+| Transaction Dialog | Inline input form | Separate `TransactionDialog.tsx` component |
+
+### UI & Features Differences
+
+| Feature | GitHub Repo | Next.js Project | Difference |
+|---------|-------------|-----------------|------------|
+| **Data Source** | Uses local `db.ts` with localStorage | Uses Prisma API via `useData()` hook | Next.js uses database, GitHub uses localStorage |
+| **Add Account Form** | Inline form with show/hide state | Separate `AccountDialog.tsx` component | Next.js has modular dialog |
+| **Add FD Form** | Inline form in main page | Separate `FDDialog.tsx` component | Next.js has extracted dialog |
+| **FD Tracker** | Inline table with manual TDS calc | Separate component with status badges | Next.js has modular FD tracker |
+| **Edit/Delete** | No edit functionality, only add | Full CRUD with edit/delete dialogs | **Next.js has more features** |
+| **Empty State** | No empty state handling | Shows `EmptyState` when no accounts | Next.js has better UX |
+| **shadcn/ui** | Uses inline table styles | Uses `<Table>`, `<Card>` from shadcn | Next.js uses component library |
+
+### Code Structure Differences
+
+**GitHub** (inline forms):
+```tsx
+// Add Account inline
+{showAddAccount && (
+  <div style={{ background: 'var(--surface)'... }}>
+    <input value={newAccount.bank}... />
+    <button onClick={handleAddAccount}>Save</button>
+  </div>
+)}
+```
+
+**Next.js** (modular dialogs):
+```tsx
+<AccountDialog open={accountDialogOpen} onOpenChange={setAccountDialogOpen} account={editingAccount} />
+<TransactionDialog open={transactionDialogOpen} onOpenChange={setTransactionDialogOpen} />
+<FDTracker /> // Separate component
+```
+
+---
+
+## 3. MUTUAL FUNDS COMPARISON
+
+### File Locations
+| Component | GitHub Repo | Next.js Project |
+|-----------|-------------|-----------------|
+| Main Page | `/tmp/Finacne-OS/src/mutual-funds/page.tsx` | `/home/z/my-project/src/components/mutual-funds/page.tsx` |
+| Holdings Table | Inline table | `HoldingsTable.tsx`, `MFHoldingsSection.tsx` |
+| Tax Harvesting | Inline panel | `TaxHarvestingPanel.tsx` |
+| Summary Bar | Inline `SummaryBox` components | `MFSummaryBar.tsx`, `MFSummaryBarNew.tsx` |
+
+### UI & Features Differences
+
+| Feature | GitHub Repo | Next.js Project | Difference |
+|---------|-------------|-----------------|------------|
+| **Navigation** | Uses `useNavigate()` hook | No navigation (just alert placeholders) | GitHub has working navigation |
+| **Tax Harvesting Panel** | Inline AI Insight Box | Separate `TaxHarvestingPanel.tsx` component | Next.js has extracted component |
+| **Overlap Analysis** | Inline `OverlapRow` component | Separate `OverlapAnalysis.tsx` component | Next.js has extracted component |
+| **Live NAV** | Same MFAPI.in integration | Same MFAPI.in integration | Identical implementation |
+| **Component Structure** | Single file with all logic | Multiple extracted components | Next.js is more modular |
+| **Edit/Delete** | No edit functionality | Full CRUD with `MFDialogManager` | **Next.js has more features** |
+| **Empty State** | No empty state | Shows `EmptyState` when no holdings | Next.js has better UX |
+| **Rebalancing Alert** | Inline card in main page | Missing from Next.js | **GitHub has this feature** |
+
+### Missing in Next.js: Rebalancing Alert Card
+```tsx
+// GitHub has this but Next.js doesn't
+<div style={cardStyle}>
+  <div style={sectionLabelStyle}>Rebalancing Alert</div>
+  <div>Equity: current 72%, target 65%</div>
+  <div>Debt: current 28%, target 35%</div>
+  <div>Add ₹2.5L to debt fund to rebalance.</div>
+</div>
+```
+
+---
+
+## 4. SHARES COMPARISON
+
+### File Locations
+| Component | GitHub Repo | Next.js Project |
+|-----------|-------------|-----------------|
+| Main Page | `/tmp/Finacne-OS/src/shares/page.tsx` | `/home/z/my-project/src/components/shares/page.tsx` |
+| Holdings Table | Inline table | `SharesHoldingsTable.tsx` component |
+
+### UI & Features Differences
+
+| Feature | GitHub Repo | Next.js Project | Difference |
+|---------|-------------|-----------------|------------|
+| **Add Stock Form** | Inline form | `ShareHoldingDialog.tsx` component | Next.js has modular dialog |
+| **Edit/Delete** | No edit functionality | Full CRUD with edit/delete | **Next.js has more features** |
+| **Empty State** | No empty state | Shows `EmptyState` when no holdings | Next.js has better UX |
+| **Refresh Button** | No refresh button | Has refresh button with spinner | Next.js has more features |
+| **Gain % Column** | Shows `h.gainPct.toFixed(2)%` | Same calculation | Identical |
+
+### UI Structure
+Both have identical:
+- Summary bar with 4 boxes (Invested, Current, Gain, Dividend)
+- Holdings table with same columns
+- Same color coding for gain/loss
+
+---
+
+## 5. SETTINGS COMPARISON
+
+### File Locations
+| Component | GitHub Repo | Next.js Project |
+|-----------|-------------|-----------------|
+| Main Page | `/tmp/Finacne-OS/src/settings/page.tsx` | `/home/z/my-project/src/components/settings/page.tsx` |
+| Components | 5 files in `components/` | 11 files in `components/` + `components/ui/` |
+
+### UI & Features Differences
+
+| Feature | GitHub Repo | Next.js Project | Difference |
+|---------|-------------|-----------------|------------|
+| **Demo Mode Toggle** | Not present | Has `demoMode` toggle with API sync | **Next.js has this feature** |
+| **Export/Import** | Local JSON export/import | API-based export/import with `toast` feedback | Next.js has better feedback |
+| **Reset to Demo** | Not present | Has reset to demo data feature | **Next.js has this feature** |
+| **Data Management** | Inline in page | Separate `DataManagementSettings.tsx` | Next.js has extracted component |
+| **Toast Notifications** | Uses `alert()` | Uses `sonner` toast library | Next.js has better UX |
+| **File Input** | Manual DOM manipulation | Uses React `useRef` pattern | Next.js uses React patterns |
+
+### Component Modularity
+**GitHub**: 5 components (AppearanceSettings, AIModelSettings, NotificationSettings, DataSyncSettings, BackupSettings)
+
+**Next.js**: 11+ components including:
+- All GitHub components
+- ExportSettings
+- SystemHealthSettings
+- DataManagementSettings
+- UI subcomponents: SettingsRow, HealthRow, Toggle, ThemeButton
+
+---
+
+## 6. GLOBAL STYLES COMPARISON
+
+### CSS Variables
+Both files are nearly **identical** with these CSS variables:
+
+| Variable | Value | Present in Both |
+|----------|-------|-----------------|
+| `--bg` | #070b12 | ✅ |
+| `--surface` | #0e1420 | ✅ |
+| `--surface2` | #141c2e | ✅ |
+| `--surface3` | #1a2440 | ✅ |
+| `--border` | #1e2d45 | ✅ |
+| `--border2` | #243355 | ✅ |
+| `--gold` | #f0a500 | ✅ |
+| `--personal` | #818cf8 | ✅ |
+| `--huf` | #34d399 | ✅ |
+| `--firm` | #fb923c | ✅ |
+| `--text` | #e8edf5 | ✅ |
+| `--text2` | #8896ae | ✅ |
+| `--text3` | #4a5568 | ✅ |
+| `--green` | #22c55e | ✅ |
+| `--red` | #f43f5e | ✅ |
+| `--amber` | #fbbf24 | ✅ |
+| `--blue` | #38bdf8 | ✅ |
+| `--radius` | 12px | ✅ |
+
+### Key CSS Difference
+**Next.js has shadcn/ui compatibility variables** (lines 32-51):
+```css
+/* shadcn compatibility */
+--background: var(--bg);
+--foreground: var(--text);
+--card: var(--surface);
+--popover: var(--surface);
+--primary: var(--gold);
+--destructive: var(--red);
+/* etc. */
+```
+
+**GitHub does NOT have these.** This allows Next.js to use shadcn/ui components seamlessly.
+
+### Font Imports
+Both import identical fonts:
+- `Playfair Display` (serif, for headings)
+- `DM Sans` (sans-serif, body)
+- `JetBrains Mono` (monospace, numbers)
+
+---
+
+## 7. MISSING FEATURES IN NEXT.JS (from GitHub)
+
+| Feature | Location in GitHub | Description |
+|---------|-------------------|-------------|
+| **Rebalancing Alert** | `mutual-funds/page.tsx` lines 436-460 | Shows equity/debt ratio alerts |
+| **Navigation Links** | All pages | Links to other pages work (react-router) |
+| **Accurate Tax Calculation** | `dashboard/page.tsx` lines 84-108 | Full new/old regime comparison |
+| **Firm Salary Calculation** | `dashboard/page.tsx` lines 74-75 | Separate calculation for firm income |
+
+---
+
+## 8. EXTRA FEATURES IN NEXT.JS (not in GitHub)
+
+| Feature | Location | Description |
+|---------|----------|-------------|
+| **Full CRUD Operations** | All pages | Edit/Delete for all entity types |
+| **Demo Mode Toggle** | Settings page | API-backed demo mode with seed data |
+| **Export/Import with Toast** | Settings page | Better feedback for data operations |
+| **Empty States** | All pages | Shows helpful messages when no data |
+| **shadcn/ui Integration** | Throughout | Uses component library for tables, cards, dialogs |
+| **Modular Components** | All pages | Better code organization with extracted components |
+| **Loading States** | Various | Shows spinners during async operations |
+| **Refresh Prices** | Shares page | Has refresh button with loading spinner |
+
+---
+
+## 9. STYLING DIFFERENCES SUMMARY
+
+| Aspect | GitHub Repo | Next.js Project |
+|--------|-------------|-----------------|
+| **CSS Variables** | 21 variables | 21 + 19 shadcn variables |
+| **Component Library** | None (custom) | shadcn/ui components |
+| **Table Styles** | Inline CSS | shadcn Table component |
+| **Card Styles** | Custom Card component | shadcn Card + custom Card |
+| **Dialogs** | Inline show/hide | shadcn Dialog component |
+| **Buttons** | Inline styles | Mix of inline and shadcn Button |
+| **Toast Notifications** | `alert()` calls | sonner library |
+| **Animations** | Custom `@keyframes spin` | Same custom animation |
+
+---
+
+## 10. ARCHITECTURE COMPARISON
+
+| Aspect | GitHub Repo | Next.js Project |
+|--------|-------------|-----------------|
+| **Framework** | Vite + React Router | Next.js 15 App Router |
+| **Data Storage** | localStorage (db.ts) | Prisma + SQLite |
+| **API Layer** | None (direct localStorage) | REST API routes in `/api/` |
+| **State Management** | React Context (DataContext) | React Context (DataContext) |
+| **Routing** | react-router-dom | Next.js App Router |
+| **Component Structure** | Monolithic page files | Extracted components |
+
+---
+
+## 11. KEY TAKEAWAYS
+
+### Next.js Project is MORE FEATURE-RICH
+1. Full CRUD for all entity types (edit/delete)
+2. Better empty state handling
+3. Demo mode toggle with API
+4. Better UX with toast notifications
+5. Modular component architecture
+6. Database persistence vs localStorage
+
+### GitHub Repo has SOME UNIQUE FEATURES
+1. Rebalancing Alert panel (MF page)
+2. Working navigation between pages
+3. More accurate tax calculation
+4. Separate firm salary calculation
+
+### Styling is Nearly Identical
+- Same color scheme
+- Same fonts
+- Same layout structure
+- Next.js adds shadcn compatibility layer
+
+
+---
+## Task ID: 16-a - GitHub Repo Analyzer Agent
+### Work Task
+Analyze the GitHub repo at `/tmp/Finacne-OS` to understand its complete structure and features.
+
+### Work Summary
+
+## 1. PROJECT OVERVIEW
+
+The GitHub repo (`/tmp/Finacne-OS`) is a **Vite + React 19** application (NOT Next.js) that implements a comprehensive personal finance management system for Indian users with multi-entity support (Self/HUF/Firm).
+
+### Technology Stack Used in GitHub Repo:
+- **Framework**: Vite + React 19 (NOT Next.js)
+- **Routing**: react-router-dom v7
+- **Styling**: Tailwind CSS 4 with CSS variables
+- **Charts**: Recharts v3
+- **Animations**: motion (Framer Motion)
+- **Icons**: Lucide React
+- **AI**: @google/genai (Google Gemini)
+- **State Management**: React Context (DataContext, EntityProvider)
+- **Data Storage**: localStorage (via custom db.ts)
+
+### Our Next.js Project Uses:
+- **Framework**: Next.js 15 with App Router
+- **Database**: Prisma + SQLite
+- **AI**: z-ai-web-dev-sdk
+- **UI**: shadcn/ui components
+
+## 2. COMPLETE FILE INVENTORY FROM GITHUB REPO
+
+### Root Files
+| File | Purpose |
+|------|---------|
+| `package.json` | Dependencies and scripts |
+| `vite.config.ts` | Vite configuration |
+| `tsconfig.json` | TypeScript config |
+| `index.html` | HTML entry point |
+| `README.md` | Documentation |
+| `CHANGELOG.md` | Version history |
+| `metadata.json` | App metadata |
+| `component-manifest.json` | Component registry |
+
+### Library Files (`src/lib/`)
+| File | Purpose |
+|------|---------|
+| `types.ts` | TypeScript interfaces (Entity, Account, FD, Transaction, MFHolding, ShareHolding, Notification) |
+| `Datacontext.tsx` | Global data context with localStorage persistence |
+| `entity-context.tsx` | Entity filtering context (personal/huf/firm) |
+| `utils.ts` | Currency formatting (`fmt()`) and class merging (`cn()`) |
+| `format.ts` | INR formatting, percent formatting, date formatting |
+| `ai-client.ts` | AI integration (Gemini, OpenRouter, NVIDIA, Claude) |
+| `db.ts` | localStorage-based database with CRUD operations |
+| `db.json` | Initial seed data |
+| `mock-data.ts` | Additional mock data exports |
+| `sanitise.ts` | Data sanitization for AI prompts (removes PII) |
+| `audit.ts` | Activity logging system |
+| `dedup.ts` | File import deduplication |
+| `skill-router.ts` | AI skill routing based on user queries |
+
+### UI Components (`src/components/ui/`)
+| File | Purpose |
+|------|---------|
+| `Sidebar.tsx` | Main navigation sidebar with entity toggle |
+| `Card.tsx` | Base card component with title/action support |
+| `EntityBadge.tsx` | Entity indicator badge (Self/HUF/Firm) |
+| `SectionHeader.tsx` | Page section header |
+| `AIInsightBox.tsx` | AI insight container with sparkles icon |
+| `TabLayout.tsx` | Page layout wrapper |
+| `NotificationPanel.tsx` | Notification dropdown panel |
+| `AIResponseModal.tsx` | Modal for AI analysis results |
+
+### Feature Pages (GitHub Repo)
+
+#### Dashboard (`src/dashboard/`)
+| File | Purpose |
+|------|---------|
+| `page.tsx` | Main dashboard with net worth, health score, asset allocation |
+| `components/NetWorthCard.tsx` | Net worth display with entity breakdown |
+| `components/HealthScoreCard.tsx` | Circular progress health score gauge |
+| `components/AssetAllocationDonut.tsx` | Pie chart for asset allocation |
+| `components/IncomeExpenseChart.tsx` | Bar chart for income/expense |
+| `components/RecentTransactions.tsx` | Transaction table preview |
+| `components/ActionQueue.tsx` | Pending action items list |
+
+#### Banking (`src/banking/`)
+| File | Purpose |
+|------|---------|
+| `page.tsx` | Banking page with accounts, FDs, transactions |
+| `components/AccountCards.tsx` | Horizontal scrolling account cards |
+| `components/FDTracker.tsx` | Fixed deposit table with maturity alerts |
+| `components/TransactionTable.tsx` | Master ledger transaction table |
+
+#### Mutual Funds (`src/mutual-funds/`)
+| File | Purpose |
+|------|---------|
+| `page.tsx` | MF holdings with live NAV, tax harvesting |
+| `components/HoldingsTable.tsx` | MF holdings table |
+| `components/MFSummaryBar.tsx` | Summary statistics row |
+| `components/TaxHarvestingPanel.tsx` | LTCG harvesting recommendations |
+| `components/AIInsightPanel.tsx` | Rebalancing alerts |
+| `components/OverlapAnalysis.tsx` | Portfolio overlap warnings |
+
+#### Shares (`src/shares/`)
+| File | Purpose |
+|------|---------|
+| `page.tsx` | Direct equity holdings page |
+| `components/SharesHoldingsTable.tsx` | Holdings table |
+| `components/SharesSummaryBar.tsx` | Summary stats |
+| `components/SharesAIPanel.tsx` | AI insights for shares |
+| `components/DividendTracker.tsx` | Dividend tracking |
+
+#### Income Tax (`src/income-tax/`)
+| File | Purpose |
+|------|---------|
+| `page.tsx` | Tax regime comparison, advance tax, LTCG |
+| `components/RegimeComparison.tsx` | Old vs New regime comparison |
+| `components/BreakevenAnalysis.tsx` | When does old regime win |
+| `components/AdvanceTaxTimeline.tsx` | Q1-Q4 tax timeline |
+| `components/IncomeSummary.tsx` | Income breakdown by source |
+
+#### Income & Expenses (`src/income-expenses/`)
+| File | Purpose |
+|------|---------|
+| `page.tsx` | Income/expense tracking with flow visualization |
+| `components/IESummaryCards.tsx` | Summary stats cards |
+| `components/IncomeBreakdown.tsx` | Income source breakdown |
+| `components/ExpenseBreakdown.tsx` | Expense category breakdown |
+| `components/LinkedTransactions.tsx` | Investment flow chains |
+
+#### Settings (`src/settings/`)
+| File | Purpose |
+|------|---------|
+| `page.tsx` | Settings page with all configurations |
+| `components/AppearanceSettings.tsx` | Theme settings |
+| `components/AIModelSettings.tsx` | AI provider and API key config |
+| `components/DataSyncSettings.tsx` | Auto-import and refresh settings |
+| `components/NotificationSettings.tsx` | Alert preferences |
+| `components/BackupSettings.tsx` | Backup and privacy |
+| `components/DataSyncSettings.tsx` | Import folder watching |
+
+#### Activity (`src/activity/`)
+| File | Purpose |
+|------|---------|
+| `page.tsx` | Audit log with filtering and export |
+
+#### Advisor (`src/advisor/`)
+| File | Purpose |
+|------|---------|
+| `page.tsx` | AI chat interface with quick actions |
+
+### Public Skills (`public/skills/`)
+| File | Purpose |
+|------|---------|
+| `instincts.md` | Core AI behavior rules (always-on checks) |
+| `_shared/indian-tax-rules.md` | Indian tax reference |
+| `dashboard/daily-briefing.md` | Morning briefing skill |
+| `banking/analysis.md` | Banking analysis prompts |
+| `mutual-funds/recommendations.md` | MF recommendations |
+| `shares/recommendations.md` | Share recommendations |
+| `income-tax/optimisation.md` | Tax optimization |
+| `income-expenses/cashflow.md` | Cashflow analysis |
+
+## 3. UNIQUE FEATURES IN GITHUB REPO
+
+### A. Skills System (AI Prompts)
+The GitHub repo has a sophisticated **skills system** with markdown files that define AI behavior:
+- `instincts.md` - 10 always-on checks (advance tax urgency, LTCG status, FD maturity, etc.)
+- Skill files for each module with specific prompts
+- Auto-routing based on keywords
+
+### B. Entity System
+Three-entity support throughout:
+- **Self (Personal)** - Personal finances
+- **HUF** - Hindu Undivided Family entity
+- **Firm** - Business entity
+- Entity toggle in sidebar for filtering
+
+### C. CSS Variables Theme
+```css
+--bg: #070b12;          /* Very dark background */
+--surface: #0e1420;     /* Card surfaces */
+--gold: #f0a500;        /* Primary accent */
+--personal: #818cf8;    /* Self entity color */
+--huf: #34d399;         /* HUF entity color */
+--firm: #fb923c;        /* Firm entity color */
+```
+
+### D. Live NAV Fetching
+Uses MFAPI.in for live mutual fund NAV:
+```javascript
+const schemeCodes = {
+  'Parag Parikh Flexi Cap Fund': '122639',
+  'Mirae Asset Large Cap Fund': '118989',
+  ...
+}
+fetch(`https://api.mfapi.in/mf/${code}`)
+```
+
+### E. AI Integration
+Supports multiple AI providers:
+- Google Gemini (primary)
+- OpenRouter
+- NVIDIA
+- Anthropic Claude
+- Data sanitization before sending to AI
+
+## 4. FILES NOT IN OUR NEXT.JS PROJECT
+
+### Missing UI Components:
+- None - Our project has all the UI components plus more shadcn/ui components
+
+### Missing Feature Components:
+| Component | GitHub Repo Has | Our Project Has |
+|-----------|-----------------|-----------------|
+| Dashboard HealthScoreCard | ✅ | ✅ (inline) |
+| Dashboard ActionQueue | ✅ | ✅ (inline) |
+| Income Tax RegimeCard | ✅ | ✅ |
+| Income Tax BreakevenAnalysis | ✅ | ✅ |
+| Income Tax AdvanceTaxTimeline | ✅ | ✅ |
+| Income Tax IncomeSummary | ✅ | ✅ |
+| Income Tax LTCGUtilisation | ✅ | ✅ |
+| Settings AppearanceSettings | ✅ | ✅ |
+| Settings AIModelSettings | ✅ | ✅ |
+| Settings DataSyncSettings | ✅ | ✅ |
+| Settings NotificationSettings | ✅ | ✅ |
+| Settings BackupSettings | ✅ | ✅ |
+| Settings DataManagementSettings | ✅ | ✅ |
+| Settings SystemHealthSettings | ✅ | ✅ |
+
+### Missing Lib Files:
+| File | Status |
+|------|--------|
+| `mock-data.ts` | Not needed (we use Prisma seed) |
+| All others | ✅ Present in our project |
+
+### Missing Skills (AI Prompts):
+Our project doesn't have the `public/skills/` folder with AI prompts. This is an important feature for context-aware AI responses.
+
+## 5. KEY DIFFERENCES
+
+| Aspect | GitHub Repo | Our Project |
+|--------|-------------|-------------|
+| Framework | Vite + React | Next.js 15 |
+| Data Storage | localStorage | Prisma + SQLite |
+| Routing | react-router-dom | Next.js App Router |
+| AI Provider | @google/genai | z-ai-web-dev-sdk |
+| Skills | Markdown files in public | Not implemented |
+| Live NAV | MFAPI.in integration | MFAPI.in integration |
+| API | No backend | Next.js API routes |
+| Type Safety | TypeScript | TypeScript |
+
+## 6. RECOMMENDATIONS FOR OUR PROJECT
+
+### High Priority:
+1. **Add Skills System** - Create `public/skills/` folder with AI prompts for context-aware responses
+2. **Implement instincts.md** - Add the 10 always-on checks for AI responses
+
+### Medium Priority:
+3. **Live Share Prices** - Implement similar to MF NAV fetching
+4. **Data Export/Import** - JSON export/import functionality exists but could be enhanced
+
+### Low Priority:
+5. **CSS Variables** - Consider using the same dark theme colors
+6. **Motion Animations** - Add smooth transitions using Framer Motion
+
+## 7. FILES SUMMARY
+
+| Category | GitHub Repo Count | Our Project Count |
+|----------|-------------------|-------------------|
+| lib files | 12 | 12 |
+| UI components | 8 | 70+ |
+| Feature pages | 9 | 9 |
+| Feature components | 25+ | 40+ |
+| API routes | 0 | 9 |
+| Skills files | 8 | 0 |
+
+**Total unique files analyzed: 75+**
+
+Our Next.js project is **more comprehensive** in terms of:
+- UI component library (shadcn/ui)
+- Backend API routes
+- Database persistence with Prisma
+
+The GitHub repo has advantages in:
+- Skills/AI prompts system
+- Simpler localStorage approach
+- Original design implementation
+
+---
+## Task ID: 17-c - Sidebar UI Fix Agent
+### Work Task
+Fix the Sidebar to match the GitHub repo style with notification bell, net worth display, and updated navigation groups.
+
+### Work Summary
+
+#### 1. Updated Navigation Groups
+Changed navigation structure to match GitHub reference:
+
+**Old Groups:**
+- OVERVIEW (Dashboard)
+- ASSETS (Banking, Mutual Funds, Shares)
+- TAXES (Income Tax)
+- TRACKING (Income & Expenses, Activity)
+- TOOLS (Advisor)
+- SYSTEM (Settings)
+
+**New Groups (GitHub style):**
+- OVERVIEW (Dashboard, Advisor)
+- FINANCES (Banking, Mutual Funds, Shares, Income Tax, Income & Expenses)
+- SYSTEM (Activity, Settings)
+
+#### 2. Added Net Worth Display
+Added a "Net Worth pill" below the logo that:
+- Shows "Net Worth" label in uppercase with small text
+- Displays net worth value in gold color using Playfair Display font
+- Only visible when netWorth > 0
+- Uses `useData()` hook to get `netWorth` from DataContext
+
+#### 3. Added Notification Bell
+Added notification functionality:
+- Bell icon button at the bottom of sidebar
+- Red dot indicator showing unread notifications
+- Opens `NotificationPanel` component on click
+- Uses `useState` to manage `isNotifOpen` state
+- Imported `NotificationPanel` from `./NotificationPanel`
+
+#### 4. Updated Entity Toggle Styling
+Entity toggle buttons now have colored backgrounds when active:
+- Personal: Uses `var(--personal)` color
+- HUF: Uses `var(--huf)` color
+- Firm: Uses `var(--firm)` color
+- Inactive buttons have border and subtle styling
+
+#### 5. Reorganized Bottom Section
+Reorganized the bottom section layout:
+- Entity toggle moved to bottom
+- FY selector moved below entity toggle
+- Bell icon + version number at the very bottom
+- All properly spaced with consistent padding
+
+#### 6. Changed Icons to Emoji
+Replaced Lucide icons with emoji icons matching GitHub style:
+- Dashboard: 📊
+- Advisor: 🤖
+- Banking: 🏦
+- Mutual Funds: 📈
+- Shares: 📉
+- Income Tax: 🧾
+- Income & Expenses: 💸
+- Activity: 📋
+- Settings: ⚙️
+
+#### 7. Added Currency Formatter
+Created `fmt()` function for compact Indian currency formatting:
+- Shows values in Lakhs (L) for amounts ≥ 1L
+- Shows values in Crores (Cr) for amounts ≥ 1Cr
+- Shows values in Thousands (K) for amounts ≥ 1K
+- Prepends ₹ symbol when `currency` param is true
+
+#### 8. Updated Mobile Sidebar
+All changes were also applied to the `MobileSidebar` component:
+- Same navigation groups
+- Same emoji icons
+- Same net worth display
+- Same notification bell integration
+- Same entity toggle styling
+
+#### Files Modified:
+- `src/components/ui/Sidebar.tsx` - Complete rewrite with new features
+
+#### Verification
+- No lint errors (`npm run lint` passed)
+- Application compiles and runs successfully
+- Sidebar displays net worth below logo
+- Notification bell opens NotificationPanel
+- Navigation groups match GitHub style
+- Entity toggle has colored backgrounds when active
+- FY selector at bottom works correctly
+- Mobile sidebar also updated with same features
+
+---
+## Task ID: 17-b - Mutual Funds Page UI Fix Agent
+### Work Task
+Fix the Mutual Funds page to match the cleaner GitHub repo style: inline Add Fund form (not modal), remove edit/delete buttons from holdings table, ensure borders use `var(--border)`, and verify Rebalancing Alert card exists.
+
+### Work Summary
+
+#### 1. Created MFInlineAddFund Component (`src/components/mutual-funds/components/MFInlineAddFund.tsx`)
+A new inline form component for adding mutual funds directly in the page:
+
+**Features:**
+- **Inline Display**: Shows a row of inputs directly in the page when clicking "+ Add Fund"
+- **Form Fields**: Fund Name, AMC (dropdown), Category (dropdown), Units, Avg NAV, Current NAV, Entity (dropdown), XIRR %, Tax Type (dropdown)
+- **Inline Styling**: Uses `var(--border)` for all borders matching the GitHub reference
+- **Validation**: Required fields are name, units, avgNAV, currentNAV
+- **Save/Cancel Actions**: Gold "Save" button and transparent "Cancel" button
+- **Integration**: Calls `addMFHolding()` from DataContext
+
+**Styling:**
+- Background: `var(--surface)`
+- Border: `1px solid var(--border)`
+- Border radius: `var(--radius)`
+- Responsive flex layout with wrapping
+
+#### 2. Updated MFHoldingsSection Component (`src/components/mutual-funds/components/MFHoldingsSection.tsx`)
+Removed edit/delete buttons for a cleaner display-only table:
+
+**Changes:**
+- **Removed Actions Column**: No more Actions column in the table header
+- **Removed onEdit/onDelete Props**: Simplified component interface
+- **Removed Edit/Delete Buttons**: Table rows are now display-only
+- **Border Styling**: Added explicit `border: 1px solid var(--border)` to Card component
+
+**Remaining Features:**
+- Fund name, category, AMC display
+- Units and NAV values with live indicator
+- Value and Gain/Loss display with color coding
+- XIRR percentage
+- Tax type badge (LTCG/STCG)
+- Entity badge
+
+#### 3. Updated Main Mutual Funds Page (`src/components/mutual-funds/page.tsx`)
+Replaced dialog-based approach with inline form:
+
+**Changes:**
+- **Removed Dialog Imports**: No longer imports MFDialogManager
+- **Added Inline Form Import**: Imports MFInlineAddFund
+- **Simplified State**: Removed editData, deleteConfirm states
+- **Added showAddFund State**: Controls visibility of inline form
+- **Removed Edit/Delete Handlers**: No more handleEditFund, handleDeleteFund
+- **Simplified Holdings Section**: Removed onEdit/onDelete props from MFHoldingsSection
+
+**Component Structure:**
+```
+TabLayout
+  └── MFPageHeader
+  └── MFInlineAddFund (conditionally visible)
+  └── MFSummaryBar
+  └── MFLiveStatusIndicator
+  └── Grid Layout
+      ├── MFHoldingsSection (display-only)
+      └── MFWaterfallSection
+  └── AIResponseModal
+```
+
+#### 4. Verified Rebalancing Alert Card
+The Rebalancing Alert Card was **already implemented** in `MFWaterfallSection.tsx`:
+
+**Features:**
+- Shows Equity/Debt ratio with progress bars
+- Displays current vs target percentages
+- Shows recommendation alert (e.g., "Add ₹2.5L to debt fund to rebalance")
+- Uses amber warning styling
+
+#### 5. Border Color Verification
+All borders now consistently use `var(--border)`:
+- MFInlineAddFund container: `border: 1px solid var(--border)`
+- MFHoldingsSection Card: `border: 1px solid var(--border)`
+- Input fields in inline form: `border: 1px solid var(--border)`
+- Cancel button: `border: 1px solid var(--border)`
+
+#### Files Created/Modified:
+- **Created**: `src/components/mutual-funds/components/MFInlineAddFund.tsx` (new)
+- **Modified**: `src/components/mutual-funds/components/MFHoldingsSection.tsx` (removed actions)
+- **Modified**: `src/components/mutual-funds/page.tsx` (inline form integration)
+
+#### Verification
+- No lint errors (`npm run lint` passed)
+- Application compiles and runs successfully
+- Add Fund button shows inline form
+- Inline form saves and hides correctly
+- Holdings table is display-only (no edit/delete)
+- Rebalancing Alert card displays in right panel
+- All borders use `var(--border)` variable
+
+---
+## Task ID: 17-a - Banking Page UI Fix Agent
+### Work Task
+Fix the Banking page to match the cleaner GitHub repo style - inline forms instead of modal dialogs, remove edit/delete buttons from account cards, and ensure correct border colors.
+
+### Work Summary
+
+#### 1. Replaced Modal Dialogs with Inline Forms
+
+**Add Account Form (Previously AccountDialog):**
+- Removed the modal `AccountDialog` component usage
+- Implemented inline form that appears directly in the page when clicking "Add Account"
+- Uses horizontal row layout with Bank Name, Account Name, Entity, Opening Balance inputs
+- Save/Cancel buttons inline
+- Form validates required fields and disables Save button until filled
+
+**Add FD Form (Previously FDDialog):**
+- Removed the modal `FDDialog` component usage
+- Implemented inline form in FDTracker that appears when clicking "Add FD"
+- Horizontal row layout with all FD fields: Account, Entity, Principal, Rate, Start Date, Maturity Date, TDS Expected, Auto FD checkbox
+- Auto-calculates maturity amount and days left
+- Save/Cancel buttons inline
+
+#### 2. Account Cards - Display Only (No Hover Edit/Delete)
+
+**Previous Implementation:**
+- Edit and Delete buttons appeared on hover
+- Required clicking small icon buttons
+
+**New Implementation:**
+- Cards are display-only by default
+- Click on a card to reveal actions menu
+- Shows Delete and Cancel buttons when clicked
+- Cleaner, less cluttered appearance
+- Entity color top border preserved
+- Hover lift effect preserved
+
+#### 3. Border Colors - Using `var(--border)`
+
+All borders now consistently use `var(--border)` which is the dark color (`#1e2d45`):
+
+**Inline Form Styles:**
+```tsx
+const inputStyle: React.CSSProperties = {
+  background: 'var(--surface2)', 
+  border: '1px solid var(--border)',
+  borderRadius: 6, 
+  color: 'var(--text)', 
+  fontFamily: 'inherit',
+  fontSize: 13, 
+  padding: '7px 10px', 
+  outline: 'none', 
+  width: 160,
+}
+
+const selectStyle: React.CSSProperties = {
+  background: 'var(--surface2)', 
+  border: '1px solid var(--border)',
+  borderRadius: 6, 
+  color: 'var(--text)', 
+  fontFamily: 'inherit',
+  fontSize: 13, 
+  padding: '7px 10px', 
+  outline: 'none', 
+  width: 160,
+  cursor: 'pointer',
+}
+```
+
+**Inline Form Container:**
+```tsx
+<div style={{ 
+  background: 'var(--surface)', 
+  border: '1px solid var(--border)', 
+  borderRadius: 'var(--radius)', 
+  padding: 20, 
+  display: 'flex', 
+  gap: 12, 
+  alignItems: 'flex-end', 
+  flexWrap: 'wrap', 
+  marginBottom: 32 
+}}>
+```
+
+**Cancel Button:**
+```tsx
+<button style={{ 
+  padding: '8px 14px', 
+  borderRadius: 8, 
+  border: '1px solid var(--border)', 
+  background: 'transparent', 
+  color: 'var(--text2)', 
+  fontSize: 13, 
+  cursor: 'pointer' 
+}}>
+  Cancel
+</button>
+```
+
+#### 4. Files Modified
+
+**`src/components/banking/page.tsx`:**
+- Complete rewrite to use inline forms
+- Removed `AccountDialog` import
+- Added inline form state management (`showAddAccount`, `newAccount`, `savingAccount`)
+- Updated `AccountCard` component to be display-only with click-to-reveal actions
+- Removed hover-based edit/delete buttons
+- All borders use `var(--border)`
+
+**`src/components/banking/components/FDTracker.tsx`:**
+- Complete rewrite to use inline forms
+- Removed `FDDialog` import
+- Added inline form state management (`showAddFD`, `newFD`, `savingFD`)
+- Inline form appears above table when "Add FD" is clicked
+- All borders use `var(--border)`
+- FD table shows only Delete action (no Edit)
+
+#### 5. UI/UX Improvements
+
+**Cleaner Appearance:**
+- No modal popups for simple add operations
+- Inline forms feel faster and more integrated
+- Less visual clutter on cards
+- Consistent styling with GitHub reference
+
+**Better UX Flow:**
+- Click "Add Account" → form slides in below header
+- Fill fields → click Save → form disappears
+- Click on card → see actions → click Delete or Cancel
+
+**Consistent Design:**
+- All inline forms use the same input/select styles
+- Same button styling (gold Save, bordered Cancel)
+- Entity color coding preserved on cards
+- Hover effects preserved for visual feedback
+
+#### Verification
+- No lint errors (`npm run lint` passed)
+- Application compiles and runs successfully
+- Banking page shows inline Add Account form
+- FD Tracker shows inline Add FD form
+- Account cards are display-only
+- Click on card reveals Delete action
+- All borders use `var(--border)` (dark color)
+- Entity color top borders work correctly
+- Hover lift effect works correctly

@@ -3,6 +3,7 @@
 import React from 'react'
 import { CheckCircle2, Clock, AlertCircle } from 'lucide-react'
 import { fmt } from '@/lib/utils'
+import { SectionLabel } from '@/components/ui/SectionLabel'
 import type { AdvanceTaxPayment } from '@/lib/types'
 
 interface AdvanceTaxTimelineProps {
@@ -100,14 +101,6 @@ function InfoIcon({ size, color }: { size: number; color: string }) {
       <line x1="12" y1="16" x2="12" y2="12"></line>
       <line x1="12" y1="8" x2="12.01" y2="8"></line>
     </svg>
-  )
-}
-
-function SectionLabel({ children }: { children: React.ReactNode }) {
-  return (
-    <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '1px' }}>
-      {children}
-    </div>
   )
 }
 

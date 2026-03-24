@@ -5,9 +5,8 @@ import { Card } from '@/components/ui/Card'
 import { formatINR } from '@/lib/format'
 import { EntityBadge } from '@/components/ui/EntityBadge'
 import { EmptyState } from '@/components/ui/EmptyState'
-import { PiggyBank, Plus, Pencil, Trash2 } from 'lucide-react'
+import { PiggyBank, Plus } from 'lucide-react'
 import { useData } from '@/lib/DataContext'
-import { FDDialog } from './FDDialog'
 import type { FixedDeposit } from '@/lib/types'
 import {
   AlertDialog,
@@ -21,13 +20,57 @@ import {
 } from '@/components/ui/alert-dialog'
 import { Button } from '@/components/ui/button'
 
+// Input style for inline forms
+const inputStyle: React.CSSProperties = {
+  background: 'var(--surface2)', 
+  border: '1px solid var(--border)',
+  borderRadius: 6, 
+  color: 'var(--text)', 
+  fontFamily: 'inherit',
+  fontSize: 13, 
+  padding: '7px 10px', 
+  outline: 'none', 
+  width: 140,
+}
+
+const selectStyle: React.CSSProperties = {
+  background: 'var(--surface2)', 
+  border: '1px solid var(--border)',
+  borderRadius: 6, 
+  color: 'var(--text)', 
+  fontFamily: 'inherit',
+  fontSize: 13, 
+  padding: '7px 10px', 
+  outline: 'none', 
+  width: 140,
+  cursor: 'pointer',
+}
+
+const labelStyle: React.CSSProperties = {
+  fontSize: 11, 
+  color: 'var(--text2)', 
+  marginBottom: 4,
+  display: 'block',
+}
+
 export function FDTracker() {
-  const { fds, deleteFD, accounts } = useData()
+  const { fds, deleteFD, accounts, addFD } = useData()
   
-  // Dialog states
-  const [dialogOpen, setDialogOpen] = useState(false)
-  const [dialogMode, setDialogMode] = useState<'add' | 'edit'>('add')
-  const [selectedFD, setSelectedFD] = useState<FixedDeposit | null>(null)
+  // Inline Add FD form state
+  const [showAddFD, setShowAddFD] = useState(false)
+  const [newFD, setNewFD] = useState({
+    accountId: '',
+    entity: 'personal' as 'personal' | 'huf' | 'firm',
+    principal: '',
+    rate: '',
+    startDate: '',
+    maturityDate: '',
+    maturityAmount: '',
+    daysLeft: '',
+    tdsExpected: '',
+    isAutoFD: false,
+  })
+  const [savingFD, setSavingFD] = useState(false)
   
   // Delete confirmation state
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
@@ -42,16 +85,119 @@ export function FDTracker() {
     [fds]
   )
 
-  const handleAddFD = () => {
-    setDialogMode('add')
-    setSelectedFD(null)
-    setDialogOpen(true)
+  // Calculate maturity amount and days left
+  const calculateMaturity = () => {
+    const principalNum = parseFloat(newFD.principal)
+    const rateNum = parseFloat(newFD.rate)
+    
+    if (principalNum > 0 && rateNum > 0) {
+      // Simple interest calculation for 1 year
+      const maturity = Math.round(principalNum * (1 + rateNum / 100))
+      setNewFD(prev => ({ ...prev, maturityAmount: maturity.toString() }))
+    }
   }
 
-  const handleEditFD = (fd: FixedDeposit) => {
-    setDialogMode('edit')
-    setSelectedFD(fd)
-    setDialogOpen(true)
+  const calculateDaysLeft = () => {
+    if (newFD.maturityDate) {
+      try {
+        const maturity = new Date(newFD.maturityDate)
+        const today = new Date()
+        const diffTime = maturity.getTime() - today.getTime()
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
+        if (diffDays >= 0) {
+          setNewFD(prev => ({ ...prev, daysLeft: diffDays.toString() }))
+        }
+      } catch {
+        // Invalid date, ignore
+      }
+    }
+  }
+
+  // Auto-calculate maturity when principal or rate changes
+  useMemo(() => {
+    calculateMaturity()
+  }, [newFD.principal, newFD.rate])
+
+  // Auto-calculate days left when maturity date changes
+  useMemo(() => {
+    calculateDaysLeft()
+  }, [newFD.maturityDate])
+
+  const handleAddFD = () => {
+    setShowAddFD(true)
+    setNewFD({
+      accountId: '',
+      entity: 'personal',
+      principal: '',
+      rate: '',
+      startDate: '',
+      maturityDate: '',
+      maturityAmount: '',
+      daysLeft: '',
+      tdsExpected: '',
+      isAutoFD: false,
+    })
+  }
+
+  const handleSaveFD = async () => {
+    if (!newFD.principal || !newFD.rate || !newFD.startDate || !newFD.maturityDate) return
+    
+    setSavingFD(true)
+    try {
+      // Determine status based on days left
+      let status: 'active' | 'maturing' | 'matured' = 'active'
+      const days = parseInt(newFD.daysLeft) || 0
+      if (days <= 0) {
+        status = 'matured'
+      } else if (days <= 30) {
+        status = 'maturing'
+      }
+
+      await addFD({
+        accountId: newFD.accountId || null,
+        entity: newFD.entity,
+        principal: parseFloat(newFD.principal) || 0,
+        rate: parseFloat(newFD.rate) || 0,
+        startDate: newFD.startDate,
+        maturityDate: newFD.maturityDate,
+        maturityAmount: parseFloat(newFD.maturityAmount) || 0,
+        daysLeft: parseInt(newFD.daysLeft) || 0,
+        tdsExpected: parseFloat(newFD.tdsExpected) || 0,
+        isAutoFD: newFD.isAutoFD,
+        status,
+      })
+      setShowAddFD(false)
+      setNewFD({
+        accountId: '',
+        entity: 'personal',
+        principal: '',
+        rate: '',
+        startDate: '',
+        maturityDate: '',
+        maturityAmount: '',
+        daysLeft: '',
+        tdsExpected: '',
+        isAutoFD: false,
+      })
+    } finally {
+      setSavingFD(false)
+    }
+  }
+
+  const handleCancelAddFD = () => {
+    setShowAddFD(false)
+    setNewFD({
+      accountId: '',
+      entity: 'personal',
+      principal: '',
+      rate: '',
+      startDate: '',
+      maturityDate: '',
+      maturityAmount: '',
+      daysLeft: '',
+      tdsExpected: '',
+      isAutoFD: false,
+    })
   }
 
   const handleDeleteClick = (fd: FixedDeposit) => {
@@ -138,6 +284,140 @@ export function FDTracker() {
         }
         noPadding
       >
+        {/* Inline Add FD Form */}
+        {showAddFD && (
+          <div style={{ 
+            background: 'var(--surface)', 
+            border: '1px solid var(--border)', 
+            borderRadius: 'var(--radius)', 
+            margin: 16,
+            padding: 20, 
+            display: 'flex', 
+            gap: 12, 
+            alignItems: 'flex-end', 
+            flexWrap: 'wrap' 
+          }}>
+            <div>
+              <div style={labelStyle}>Account</div>
+              <select 
+                value={newFD.accountId} 
+                onChange={(e) => setNewFD(prev => ({ ...prev, accountId: e.target.value }))}
+                style={{ ...selectStyle, width: 180 }}
+              >
+                <option value="">Select account</option>
+                {accounts.map((acc) => (
+                  <option key={acc.id} value={acc.id}>
+                    {acc.bank} - {acc.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <div style={labelStyle}>Entity</div>
+              <select 
+                value={newFD.entity} 
+                onChange={(e) => setNewFD(prev => ({ ...prev, entity: e.target.value as 'personal' | 'huf' | 'firm' }))}
+                style={selectStyle}
+              >
+                <option value="personal">Self</option>
+                <option value="huf">HUF</option>
+                <option value="firm">Firm</option>
+              </select>
+            </div>
+            <div>
+              <div style={labelStyle}>Principal *</div>
+              <input 
+                type="number"
+                value={newFD.principal} 
+                onChange={(e) => setNewFD(prev => ({ ...prev, principal: e.target.value }))}
+                placeholder="500000" 
+                style={{ ...inputStyle, width: 120 }} 
+              />
+            </div>
+            <div>
+              <div style={labelStyle}>Rate (%) *</div>
+              <input 
+                type="number"
+                step="0.01"
+                value={newFD.rate} 
+                onChange={(e) => setNewFD(prev => ({ ...prev, rate: e.target.value }))}
+                placeholder="7.25" 
+                style={{ ...inputStyle, width: 80 }} 
+              />
+            </div>
+            <div>
+              <div style={labelStyle}>Start Date *</div>
+              <input 
+                value={newFD.startDate} 
+                onChange={(e) => setNewFD(prev => ({ ...prev, startDate: e.target.value }))}
+                placeholder="03 Apr 2025" 
+                style={{ ...inputStyle, width: 120 }} 
+              />
+            </div>
+            <div>
+              <div style={labelStyle}>Maturity Date *</div>
+              <input 
+                value={newFD.maturityDate} 
+                onChange={(e) => setNewFD(prev => ({ ...prev, maturityDate: e.target.value }))}
+                placeholder="03 Apr 2026" 
+                style={{ ...inputStyle, width: 120 }} 
+              />
+            </div>
+            <div>
+              <div style={labelStyle}>TDS Expected</div>
+              <input 
+                type="number"
+                value={newFD.tdsExpected} 
+                onChange={(e) => setNewFD(prev => ({ ...prev, tdsExpected: e.target.value }))}
+                placeholder="0" 
+                style={{ ...inputStyle, width: 100 }} 
+              />
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 2 }}>
+              <input 
+                type="checkbox"
+                id="isAutoFD"
+                checked={newFD.isAutoFD}
+                onChange={(e) => setNewFD(prev => ({ ...prev, isAutoFD: e.target.checked }))}
+                style={{ width: 14, height: 14, cursor: 'pointer' }}
+              />
+              <label htmlFor="isAutoFD" style={{ fontSize: 11, color: 'var(--text2)', cursor: 'pointer' }}>
+                Auto FD
+              </label>
+            </div>
+            <button 
+              onClick={handleSaveFD} 
+              disabled={savingFD || !newFD.principal || !newFD.rate || !newFD.startDate || !newFD.maturityDate}
+              style={{ 
+                padding: '8px 18px', 
+                borderRadius: 8, 
+                border: 'none', 
+                background: savingFD || !newFD.principal || !newFD.rate || !newFD.startDate || !newFD.maturityDate ? 'var(--text3)' : 'var(--gold)', 
+                color: '#000', 
+                fontWeight: 700, 
+                fontSize: 13, 
+                cursor: savingFD || !newFD.principal || !newFD.rate || !newFD.startDate || !newFD.maturityDate ? 'not-allowed' : 'pointer' 
+              }}
+            >
+              {savingFD ? 'Saving...' : 'Save'}
+            </button>
+            <button 
+              onClick={handleCancelAddFD} 
+              style={{ 
+                padding: '8px 14px', 
+                borderRadius: 8, 
+                border: '1px solid var(--border)', 
+                background: 'transparent', 
+                color: 'var(--text2)', 
+                fontSize: 13, 
+                cursor: 'pointer' 
+              }}
+            >
+              Cancel
+            </button>
+          </div>
+        )}
+
         {fds.length === 0 ? (
           <EmptyState
             icon={PiggyBank}
@@ -189,20 +469,12 @@ export function FDTracker() {
                       <StatusBadge status={fd.status} />
                     </td>
                     <td className="px-5 py-3">
-                      <div className="flex items-center justify-center gap-1">
-                        <button
-                          onClick={() => handleEditFD(fd as FD)}
-                          className="p-1.5 rounded hover:bg-[var(--surface2)] text-[var(--text3)] hover:text-[var(--text)] transition-colors"
-                          title="Edit FD"
-                        >
-                          <Pencil size={14} />
-                        </button>
+                      <div className="flex items-center justify-center">
                         <button
                           onClick={() => handleDeleteClick(fd as FD)}
-                          className="p-1.5 rounded hover:bg-[var(--red)]/10 text-[var(--text3)] hover:text-[var(--red)] transition-colors"
-                          title="Delete FD"
+                          className="text-[11px] font-semibold text-[var(--red)] hover:underline"
                         >
-                          <Trash2 size={14} />
+                          Delete
                         </button>
                       </div>
                     </td>
@@ -213,14 +485,6 @@ export function FDTracker() {
           </div>
         )}
       </Card>
-
-      {/* Add/Edit FD Dialog */}
-      <FDDialog
-        open={dialogOpen}
-        onOpenChange={setDialogOpen}
-        fd={selectedFD}
-        mode={dialogMode}
-      />
 
       {/* Delete Confirmation Dialog */}
       <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
@@ -255,4 +519,12 @@ export function FDTracker() {
       </AlertDialog>
     </>
   )
+}
+
+// Type for FD with account relation
+type FD = FixedDeposit & {
+  account?: {
+    name: string
+    bank: string
+  }
 }
