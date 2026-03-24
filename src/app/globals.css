@@ -1,0 +1,96 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=DM+Sans:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-playfair: "Playfair Display", serif;
+  --font-sans: "DM Sans", sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
+}
+
+:root {
+  --bg: #070b12;
+  --surface: #0e1420;
+  --surface2: #141c2e;
+  --surface3: #1a2440;
+  --border: #1e2d45;
+  --border2: #243355;
+  --gold: #f0a500;
+  --gold-dim: #a87200;
+  --personal: #818cf8; /* Self entity colour */
+  --huf: #34d399; /* HUF entity colour */
+  --firm: #fb923c; /* Firm entity colour */
+  --text: #e8edf5;
+  --text2: #8896ae;
+  --text3: #4a5568;
+  --green: #22c55e;
+  --red: #f43f5e;
+  --amber: #fbbf24;
+  --blue: #38bdf8;
+  --radius: 12px;
+  --radius-sm: 8px;
+  
+  /* shadcn compatibility */
+  --background: var(--bg);
+  --foreground: var(--text);
+  --card: var(--surface);
+  --card-foreground: var(--text);
+  --popover: var(--surface);
+  --popover-foreground: var(--text);
+  --primary: var(--gold);
+  --primary-foreground: var(--bg);
+  --secondary: var(--surface2);
+  --secondary-foreground: var(--text);
+  --muted: var(--surface2);
+  --muted-foreground: var(--text2);
+  --accent: var(--surface3);
+  --accent-foreground: var(--text);
+  --destructive: var(--red);
+  --border: var(--border);
+  --input: var(--surface2);
+  --ring: var(--gold);
+}
+
+body {
+  background-color: var(--bg);
+  color: var(--text);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, .font-playfair {
+  font-family: var(--font-playfair);
+}
+
+.font-mono {
+  font-family: var(--font-mono);
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--surface3);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--border2);
+}
+
+@layer base {
+  * {
+    border-color: var(--border);
+  }
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}

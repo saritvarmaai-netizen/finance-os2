@@ -1,0 +1,113 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// Entity type: 'personal' | 'huf' | 'firm'
+// Status for FD: 'active' | 'maturing' | 'matured'
+// Tax type: 'LTCG' | 'STCG'
+
+model Account {
+  id             String   @id @default(cuid())
+  bank           String
+  name           String
+  entity         String   // 'personal' | 'huf' | 'firm'
+  balance        Float
+  monthlyInflow  Float    @default(0)
+  monthlyOutflow Float    @default(0)
+  isAutoFD       Boolean  @default(false)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  fixedDeposits FixedDeposit[]
+}
+
+model FixedDeposit {
+  id             String   @id @default(cuid())
+  accountId      String
+  entity         String   // 'personal' | 'huf' | 'firm'
+  principal      Float
+  rate           Float
+  startDate      String   // Stored as string for compatibility
+  maturityDate   String
+  maturityAmount Float
+  daysLeft       Int      @default(0)
+  tdsExpected    Float    @default(0)
+  isAutoFD       Boolean  @default(false)
+  status         String   @default("active") // 'active' | 'maturing' | 'matured'
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  account Account @relation(fields: [accountId], references: [id], onDelete: Cascade)
+}
+
+model Transaction {
+  id          String   @id @default(cuid())
+  date        String   // Stored as string for compatibility
+  description String
+  account     String
+  category    String
+  debit       Float    @default(0)
+  credit      Float    @default(0)
+  entity      String   // 'personal' | 'huf' | 'firm'
+  aiConfidence Int     @default(0)
+  isTransfer  Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model MFHolding {
+  id         String   @id @default(cuid())
+  name       String
+  amc        String
+  category   String
+  entity     String   // 'personal' | 'huf' | 'firm'
+  units      Float
+  avgNAV     Float
+  currentNAV Float
+  xirr       Float    @default(0)
+  taxType    String   @default("LTCG") // 'LTCG' | 'STCG'
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model ShareHolding {
+  id          String   @id @default(cuid())
+  symbol      String
+  company     String
+  exchange    String
+  sector      String
+  entity      String   // 'personal' | 'huf' | 'firm'
+  qty         Int
+  avgPrice    Float
+  cmp         Float
+  dividendFY  Float    @default(0)
+  taxType     String   @default("LTCG") // 'LTCG' | 'STCG'
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model AppSettings {
+  id        String   @id @default(cuid())
+  key       String   @unique
+  value     String   // JSON string for complex values
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  type      String
+  title     String
+  body      String
+  priority  String   @default("normal") // 'low' | 'normal' | 'high'
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
