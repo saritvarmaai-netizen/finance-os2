@@ -11,6 +11,7 @@ interface ImportAccount {
   monthlyInflow?: number
   monthlyOutflow?: number
   isAutoFD?: boolean
+  isClubbed?: boolean
 }
 
 interface ImportFixedDeposit {
@@ -140,6 +141,7 @@ export async function POST(request: NextRequest) {
           monthlyInflow: a.monthlyInflow || 0,
           monthlyOutflow: a.monthlyOutflow || 0,
           isAutoFD: a.isAutoFD || false,
+          isClubbed: a.isClubbed || false,
         })),
         skipDuplicates: true,
       })

@@ -32,10 +32,10 @@ export interface Account {
   monthlyInflow: number
   monthlyOutflow: number
   isAutoFD: boolean
+  isClubbed: boolean
   createdAt?: string
   updatedAt?: string
   fds?: FixedDeposit[]
-  interestClubbedTo?: string
 }
 
 /** Fixed Deposit - linked to an account */

@@ -95,14 +95,20 @@ export default function MutualFundsPage() {
       )
       
       setLiveNAV(results)
-      
-      // Save to db
-      Object.entries(results).forEach(([name, nav]) => {
-        const h = holdings.find(h => h.name === name)
-        if (h) {
-          updateMFNav(h.id, nav)
-        }
-      })
+
+      // Save to db - await all updates properly
+      await Promise.all(
+        Object.entries(results).map(async ([name, nav]) => {
+          const h = holdings.find(h => h.name === name)
+          if (h) {
+            try {
+              await updateMFNav(h.id, nav)
+            } catch (err) {
+              console.error(`Failed to update NAV for ${name}:`, err)
+            }
+          }
+        })
+      )
 
       const now = new Date()
       setLastUpdated(

@@ -177,7 +177,12 @@ function computeEntityNetWorth(
 export function DataProvider({ children }: { children: React.ReactNode }) {
   const [state, setState] = useState(getInitialState)
   const [selectedFY, setSelectedFY] = useState('FY 2025-26')
-  const mountedRef = useRef(false)
+  
+  // Use a ref to access current state in callbacks without causing re-renders
+  const stateRef = useRef(state)
+  useEffect(() => {
+    stateRef.current = state
+  }, [state])
 
   // Fetch all data from APIs
   const fetchAllData = useCallback(async () => {
@@ -257,11 +262,20 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
     }
   }, [])
 
-  // Initial load
+  // Initial load - with proper cleanup to prevent race conditions
   useEffect(() => {
-    if (!mountedRef.current) {
-      mountedRef.current = true
-      fetchAllData()
+    let isMounted = true
+    
+    const loadData = async () => {
+      if (isMounted) {
+        await fetchAllData()
+      }
+    }
+    
+    loadData()
+    
+    return () => {
+      isMounted = false
     }
   }, [fetchAllData])
 
@@ -527,23 +541,25 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
   // === Reset Operations ===
   const resetData = useCallback(async (type: 'all' | 'transactions' | 'mf' | 'shares') => {
     try {
+      const currentState = stateRef.current
+      
       if (type === 'all') {
         // Delete all data - call delete for each entity
         const deletePromises: Promise<void>[] = []
         
-        state.accounts.forEach(a => deletePromises.push(deleteAccount(a.id)))
-        state.fds.forEach(f => deletePromises.push(deleteFD(f.id)))
-        state.transactions.forEach(t => deletePromises.push(deleteTransaction(t.id)))
-        state.mfHoldings.forEach(m => deletePromises.push(deleteMFHolding(m.id)))
-        state.shareHoldings.forEach(s => deletePromises.push(deleteShareHolding(s.id)))
+        currentState.accounts.forEach(a => deletePromises.push(deleteAccount(a.id)))
+        currentState.fds.forEach(f => deletePromises.push(deleteFD(f.id)))
+        currentState.transactions.forEach(t => deletePromises.push(deleteTransaction(t.id)))
+        currentState.mfHoldings.forEach(m => deletePromises.push(deleteMFHolding(m.id)))
+        currentState.shareHoldings.forEach(s => deletePromises.push(deleteShareHolding(s.id)))
         
         await Promise.all(deletePromises)
       } else if (type === 'transactions') {
-        await Promise.all(state.transactions.map(t => deleteTransaction(t.id)))
+        await Promise.all(stateRef.current.transactions.map(t => deleteTransaction(t.id)))
       } else if (type === 'mf') {
-        await Promise.all(state.mfHoldings.map(m => deleteMFHolding(m.id)))
+        await Promise.all(stateRef.current.mfHoldings.map(m => deleteMFHolding(m.id)))
       } else if (type === 'shares') {
-        await Promise.all(state.shareHoldings.map(s => deleteShareHolding(s.id)))
+        await Promise.all(stateRef.current.shareHoldings.map(s => deleteShareHolding(s.id)))
       }
       
       await fetchAllData()
@@ -552,7 +568,7 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
       toast.error('Failed to reset data')
       throw error
     }
-  }, [fetchAllData, state.accounts, state.fds, state.transactions, state.mfHoldings, state.shareHoldings, deleteAccount, deleteFD, deleteTransaction, deleteMFHolding, deleteShareHolding])
+  }, [fetchAllData, deleteAccount, deleteFD, deleteTransaction, deleteMFHolding, deleteShareHolding])
 
   return (
     <DataContext.Provider

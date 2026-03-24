@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, useMemo } from 'react'
 import { ChevronDown, Bell } from 'lucide-react'
 import { useEntity } from '@/lib/entity-context'
 import { useData } from '@/lib/DataContext'
@@ -68,8 +68,11 @@ interface SidebarProps {
 
 export function Sidebar({ currentPage, setCurrentPage }: SidebarProps) {
   const { toggleEntity, isActive } = useEntity()
-  const { selectedFY, setSelectedFY, netWorth } = useData()
+  const { selectedFY, setSelectedFY, netWorth, loading } = useData()
   const [isNotifOpen, setIsNotifOpen] = useState(false)
+  
+  // Memoize formatted net worth to prevent recalculation
+  const formattedNetWorth = useMemo(() => fmt(netWorth, true), [netWorth])
 
   return (
     <aside className="w-64 h-screen bg-[var(--surface)] border-r border-[var(--border)] flex flex-col fixed left-0 top-0 z-40 hidden lg:flex">
@@ -88,17 +91,15 @@ export function Sidebar({ currentPage, setCurrentPage }: SidebarProps) {
           </span>
         </button>
 
-        {/* Net Worth pill */}
-        {netWorth > 0 && (
-          <div className="mt-2.5 px-2.5 py-1.5 bg-[var(--surface2)] rounded-lg border border-[var(--border)]">
-            <div className="text-[9px] font-semibold text-[var(--text3)] uppercase tracking-wider mb-0.5">
-              Net Worth
-            </div>
-            <div className="text-[15px] font-playfair font-bold text-[var(--gold)]">
-              {fmt(netWorth, true)}
-            </div>
+        {/* Net Worth pill - always visible, shows placeholder while loading */}
+        <div className="mt-2.5 px-2.5 py-1.5 bg-[var(--surface2)] rounded-lg border border-[var(--border)]">
+          <div className="text-[9px] font-semibold text-[var(--text3)] uppercase tracking-wider mb-0.5">
+            Net Worth
           </div>
-        )}
+          <div className="text-[15px] font-playfair font-bold text-[var(--gold)]">
+            {loading ? '...' : formattedNetWorth}
+          </div>
+        </div>
       </div>
 
       {/* Navigation */}
@@ -209,8 +210,11 @@ interface MobileSidebarProps {
 
 export function MobileSidebar({ isOpen, onClose, currentPage, setCurrentPage }: MobileSidebarProps) {
   const { toggleEntity, isActive } = useEntity()
-  const { selectedFY, setSelectedFY, netWorth } = useData()
+  const { selectedFY, setSelectedFY, netWorth, loading } = useData()
   const [isNotifOpen, setIsNotifOpen] = useState(false)
+  
+  // Memoize formatted net worth to prevent recalculation
+  const formattedNetWorth = useMemo(() => fmt(netWorth, true), [netWorth])
 
   const handleNavClick = (path: PageType) => {
     setCurrentPage(path)
@@ -232,17 +236,15 @@ export function MobileSidebar({ isOpen, onClose, currentPage, setCurrentPage }: 
               </span>
             </SheetTitle>
 
-            {/* Net Worth pill */}
-            {netWorth > 0 && (
-              <div className="mt-2.5 px-2.5 py-1.5 bg-[var(--surface2)] rounded-lg border border-[var(--border)]">
-                <div className="text-[9px] font-semibold text-[var(--text3)] uppercase tracking-wider mb-0.5">
-                  Net Worth
-                </div>
-                <div className="text-[15px] font-playfair font-bold text-[var(--gold)]">
-                  {fmt(netWorth, true)}
-                </div>
+            {/* Net Worth pill - always visible, shows placeholder while loading */}
+            <div className="mt-2.5 px-2.5 py-1.5 bg-[var(--surface2)] rounded-lg border border-[var(--border)]">
+              <div className="text-[9px] font-semibold text-[var(--text3)] uppercase tracking-wider mb-0.5">
+                Net Worth
               </div>
-            )}
+              <div className="text-[15px] font-playfair font-bold text-[var(--gold)]">
+                {loading ? '...' : formattedNetWorth}
+              </div>
+            </div>
           </SheetHeader>
 
           {/* Navigation */}

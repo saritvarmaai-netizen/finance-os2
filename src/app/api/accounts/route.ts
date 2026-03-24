@@ -1,3 +1,4 @@
+// Accounts API - handles CRUD operations for bank accounts
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 
@@ -18,7 +19,7 @@ export async function GET() {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    const { id, bank, name, entity, balance, monthlyInflow, monthlyOutflow, isAutoFD } = body
+    const { id, bank, name, entity, balance, monthlyInflow, monthlyOutflow, isAutoFD, isClubbed } = body
 
     const account = await db.account.create({
       data: {
@@ -30,6 +31,7 @@ export async function POST(request: NextRequest) {
         monthlyInflow: monthlyInflow || 0,
         monthlyOutflow: monthlyOutflow || 0,
         isAutoFD: isAutoFD || false,
+        isClubbed: isClubbed || false,
       },
     })
 

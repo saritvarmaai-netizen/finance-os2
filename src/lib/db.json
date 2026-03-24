@@ -1,11 +1,11 @@
 {
   "accounts": [
-    { "id": "sbi_savings",   "bank": "SBI",            "name": "Savings Account",      "entity": "personal", "balance": 285000,  "monthlyInflow": 188200, "monthlyOutflow": 124600, "fdCount": 0, "isClubbed": false, "isAutoFD": false },
-    { "id": "bob_savings",   "bank": "Bank of Baroda", "name": "Savings Account",      "entity": "personal", "balance": 142000,  "monthlyInflow": 82000,  "monthlyOutflow": 65400,  "fdCount": 0, "isClubbed": false, "isAutoFD": false },
-    { "id": "idfc_personal", "bank": "IDFC FIRST Bank","name": "Personal Savings",     "entity": "personal", "balance": 423000,  "monthlyInflow": 245000, "monthlyOutflow": 198500, "fdCount": 0, "isClubbed": false, "isAutoFD": false },
-    { "id": "idfc_child",    "bank": "IDFC FIRST Bank","name": "Child Savings",        "entity": "personal", "balance": 95000,   "monthlyInflow": 36250,  "monthlyOutflow": 0,      "fdCount": 1, "isClubbed": true,  "isAutoFD": false },
-    { "id": "idfc_huf",      "bank": "IDFC FIRST Bank","name": "HUF Savings",          "entity": "huf",      "balance": 187000,  "monthlyInflow": 75000,  "monthlyOutflow": 0,      "fdCount": 1, "isClubbed": false, "isAutoFD": false },
-    { "id": "idfc_firm",     "bank": "IDFC FIRST Bank","name": "Firm Current Account", "entity": "firm",     "balance": 845000,  "monthlyInflow": 420000, "monthlyOutflow": 200000, "fdCount": 1, "isClubbed": false, "isAutoFD": true  }
+    { "id": "sbi_savings",   "bank": "SBI",            "name": "Savings Account",      "entity": "personal", "balance": 285000,  "monthlyInflow": 188200, "monthlyOutflow": 124600, "isAutoFD": false, "isClubbed": false },
+    { "id": "bob_savings",   "bank": "Bank of Baroda", "name": "Savings Account",      "entity": "personal", "balance": 142000,  "monthlyInflow": 82000,  "monthlyOutflow": 65400,  "isAutoFD": false, "isClubbed": false },
+    { "id": "idfc_personal", "bank": "IDFC FIRST Bank","name": "Personal Savings",     "entity": "personal", "balance": 423000,  "monthlyInflow": 245000, "monthlyOutflow": 198500, "isAutoFD": false, "isClubbed": false },
+    { "id": "idfc_child",    "bank": "IDFC FIRST Bank","name": "Child Savings",        "entity": "personal", "balance": 95000,   "monthlyInflow": 36250,  "monthlyOutflow": 0,      "isAutoFD": false, "isClubbed": true },
+    { "id": "idfc_huf",      "bank": "IDFC FIRST Bank","name": "HUF Savings",          "entity": "huf",      "balance": 187000,  "monthlyInflow": 75000,  "monthlyOutflow": 0,      "isAutoFD": false, "isClubbed": false },
+    { "id": "idfc_firm",     "bank": "IDFC FIRST Bank","name": "Firm Current Account", "entity": "firm",     "balance": 845000,  "monthlyInflow": 420000, "monthlyOutflow": 200000, "isAutoFD": true,  "isClubbed": false }
   ],
   "fixedDeposits": [
     { "id": "fd_child", "accountId": "idfc_child", "entity": "personal", "principal": 500000,  "rate": 7.25, "startDate": "03 Apr 2025", "maturityDate": "03 Apr 2026", "maturityAmount": 536250,  "daysLeft": 13,  "tdsExpected": 7219,  "isAutoFD": false, "isClubbed": true,  "status": "maturing" },

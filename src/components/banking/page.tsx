@@ -19,7 +19,7 @@ import { EmptyState } from '@/components/ui/EmptyState'
 import { TransactionDialog } from './components/TransactionDialog'
 import { FDTracker } from './components/FDTracker'
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog'
-import type { Account } from '@/lib/types'
+import type { Account, FixedDeposit } from '@/lib/types'
 
 // Input style for inline forms
 const inputStyle: React.CSSProperties = {
@@ -424,6 +424,7 @@ export default function BankingPage() {
           <AccountCard 
             key={acc.id} 
             acc={acc} 
+            fds={fds}
             onDelete={handleDeleteAccount}
           />
         ))}
@@ -547,7 +548,7 @@ export default function BankingPage() {
 }
 
 // Account Card Component - Display only, no edit/delete buttons on hover
-function AccountCard({ acc, onDelete }: { acc: Account; onDelete: (acc: Account) => void }) {
+function AccountCard({ acc, fds, onDelete }: { acc: Account; fds: FixedDeposit[]; onDelete: (acc: Account) => void }) {
   const [isHovered, setIsHovered] = useState(false)
   const [showActions, setShowActions] = useState(false)
   const colors: Record<string, string> = {
@@ -555,6 +556,10 @@ function AccountCard({ acc, onDelete }: { acc: Account; onDelete: (acc: Account)
     huf: 'var(--green)',
     firm: 'var(--firm)',
   }
+  
+  // Count FDs linked to this account
+  const linkedFDs = fds.filter(fd => fd.accountId === acc.id)
+  const fdCount = linkedFDs.length
   
   return (
     <div 
@@ -640,7 +645,24 @@ function AccountCard({ acc, onDelete }: { acc: Account; onDelete: (acc: Account)
           <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--red)', fontFamily: '"JetBrains Mono", monospace' }}>▼ {fmt(acc.monthlyOutflow, true)}</div>
         </div>
       </div>
-      <div style={{ display: 'flex', gap: 6, marginTop: 16 }}>
+      {/* Badges: FD Active, Clubbed, Auto-FD */}
+      <div style={{ display: 'flex', gap: 6, marginTop: 16, flexWrap: 'wrap' }}>
+        {fdCount > 0 && (
+          <span style={{ 
+            padding: '2px 6px', borderRadius: 4, fontSize: 9, fontWeight: 700, 
+            color: 'var(--blue)', background: 'rgba(59,130,246,0.1)', border: '1px solid rgba(59,130,246,0.2)' 
+          }}>
+            {fdCount}FD Active
+          </span>
+        )}
+        {acc.isClubbed && (
+          <span style={{ 
+            padding: '2px 6px', borderRadius: 4, fontSize: 9, fontWeight: 700, 
+            color: 'var(--gold)', background: 'rgba(212,175,55,0.1)', border: '1px solid rgba(212,175,55,0.2)' 
+          }}>
+            Clubbed
+          </span>
+        )}
         {acc.isAutoFD && (
           <span style={{ 
             padding: '2px 6px', borderRadius: 4, fontSize: 9, fontWeight: 700, 

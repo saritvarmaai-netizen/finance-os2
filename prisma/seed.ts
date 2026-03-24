@@ -1,483 +1,150 @@
 import { PrismaClient } from '@prisma/client'
+import fs from 'fs'
+import path from 'path'
 
 const prisma = new PrismaClient()
 
-async function main() {
-  console.log('Seeding database...')
+// Read the db.json file
+const dbJsonPath = path.join(__dirname, '../src/lib/db.json')
+const dbJson = JSON.parse(fs.readFileSync(dbJsonPath, 'utf-8'))
 
-  // Clear existing data
-  await prisma.notification.deleteMany()
-  await prisma.appSettings.deleteMany()
-  await prisma.shareHolding.deleteMany()
-  await prisma.mFHolding.deleteMany()
+async function main() {
+  console.log('🌱 Starting seed...')
+  
+  // Clear existing data first
+  console.log('🗑️  Clearing existing data...')
   await prisma.transaction.deleteMany()
   await prisma.fixedDeposit.deleteMany()
   await prisma.account.deleteMany()
+  await prisma.mFHolding.deleteMany()
+  await prisma.shareHolding.deleteMany()
+  await prisma.appSettings.deleteMany()
+  console.log('✅ Existing data cleared')
 
   // Seed Accounts
-  const accounts = await Promise.all([
-    prisma.account.create({
+  console.log('📊 Seeding accounts...')
+  for (const account of dbJson.accounts) {
+    await prisma.account.create({
       data: {
-        id: 'sbi_savings',
-        bank: 'SBI',
-        name: 'Savings Account',
-        entity: 'personal',
-        balance: 285000,
-        monthlyInflow: 188200,
-        monthlyOutflow: 124600,
-        isAutoFD: false,
-      },
-    }),
-    prisma.account.create({
-      data: {
-        id: 'bob_savings',
-        bank: 'Bank of Baroda',
-        name: 'Savings Account',
-        entity: 'personal',
-        balance: 142000,
-        monthlyInflow: 82000,
-        monthlyOutflow: 65400,
-        isAutoFD: false,
-      },
-    }),
-    prisma.account.create({
-      data: {
-        id: 'idfc_personal',
-        bank: 'IDFC FIRST Bank',
-        name: 'Personal Savings',
-        entity: 'personal',
-        balance: 423000,
-        monthlyInflow: 245000,
-        monthlyOutflow: 198500,
-        isAutoFD: false,
-      },
-    }),
-    prisma.account.create({
-      data: {
-        id: 'idfc_child',
-        bank: 'IDFC FIRST Bank',
-        name: 'Child Savings',
-        entity: 'personal',
-        balance: 95000,
-        monthlyInflow: 36250,
-        monthlyOutflow: 0,
-        isAutoFD: false,
-      },
-    }),
-    prisma.account.create({
-      data: {
-        id: 'idfc_huf',
-        bank: 'IDFC FIRST Bank',
-        name: 'HUF Savings',
-        entity: 'huf',
-        balance: 187000,
-        monthlyInflow: 75000,
-        monthlyOutflow: 0,
-        isAutoFD: false,
-      },
-    }),
-    prisma.account.create({
-      data: {
-        id: 'idfc_firm',
-        bank: 'IDFC FIRST Bank',
-        name: 'Firm Current Account',
-        entity: 'firm',
-        balance: 845000,
-        monthlyInflow: 420000,
-        monthlyOutflow: 200000,
-        isAutoFD: true,
-      },
-    }),
-  ])
-
-  console.log(`Created ${accounts.length} accounts`)
+        id: account.id,
+        bank: account.bank,
+        name: account.name,
+        entity: account.entity,
+        balance: account.balance,
+        monthlyInflow: account.monthlyInflow || 0,
+        monthlyOutflow: account.monthlyOutflow || 0,
+        isAutoFD: account.isAutoFD || false,
+        isClubbed: account.isClubbed || false,
+      }
+    })
+  }
+  console.log(`✅ ${dbJson.accounts.length} accounts seeded`)
 
   // Seed Fixed Deposits
-  const fixedDeposits = await Promise.all([
-    prisma.fixedDeposit.create({
+  console.log('🏦 Seeding fixed deposits...')
+  for (const fd of dbJson.fixedDeposits) {
+    await prisma.fixedDeposit.create({
       data: {
-        id: 'fd_child',
-        accountId: 'idfc_child',
-        entity: 'personal',
-        principal: 500000,
-        rate: 7.25,
-        startDate: '03 Apr 2025',
-        maturityDate: '03 Apr 2026',
-        maturityAmount: 536250,
-        daysLeft: 13,
-        tdsExpected: 7219,
-        isAutoFD: false,
-        status: 'maturing',
-      },
-    }),
-    prisma.fixedDeposit.create({
-      data: {
-        id: 'fd_huf',
-        accountId: 'idfc_huf',
-        entity: 'huf',
-        principal: 1000000,
-        rate: 7.50,
-        startDate: '15 Jun 2025',
-        maturityDate: '15 Jun 2026',
-        maturityAmount: 1075000,
-        daysLeft: 86,
-        tdsExpected: 18750,
-        isAutoFD: false,
-        status: 'active',
-      },
-    }),
-    prisma.fixedDeposit.create({
-      data: {
-        id: 'fd_firm',
-        accountId: 'idfc_firm',
-        entity: 'firm',
-        principal: 1500000,
-        rate: 6.80,
-        startDate: '10 Jan 2026',
-        maturityDate: '10 Jul 2026',
-        maturityAmount: 1551000,
-        daysLeft: 111,
-        tdsExpected: 0,
-        isAutoFD: true,
-        status: 'active',
-      },
-    }),
-  ])
-
-  console.log(`Created ${fixedDeposits.length} fixed deposits`)
+        id: fd.id,
+        accountId: fd.accountId,
+        entity: fd.entity,
+        principal: fd.principal,
+        rate: fd.rate,
+        startDate: fd.startDate,
+        maturityDate: fd.maturityDate,
+        maturityAmount: fd.maturityAmount,
+        daysLeft: fd.daysLeft,
+        tdsExpected: fd.tdsExpected || 0,
+        isAutoFD: fd.isAutoFD || false,
+        status: fd.status || 'active',
+      }
+    })
+  }
+  console.log(`✅ ${dbJson.fixedDeposits.length} fixed deposits seeded`)
 
   // Seed Transactions
-  const transactions = await Promise.all([
-    prisma.transaction.create({
+  console.log('💰 Seeding transactions...')
+  for (const tx of dbJson.transactions) {
+    await prisma.transaction.create({
       data: {
-        id: 't1',
-        date: '21 Mar',
-        description: 'NACH — Parag Parikh SIP',
-        account: 'IDFC Personal',
-        category: 'Investment',
-        debit: 25000,
-        credit: 0,
-        entity: 'personal',
-        aiConfidence: 98,
-        isTransfer: false,
-      },
-    }),
-    prisma.transaction.create({
-      data: {
-        id: 't2',
-        date: '20 Mar',
-        description: 'NEFT CR — ABC Pvt Ltd Salary',
-        account: 'SBI Savings',
-        category: 'Salary',
-        debit: 0,
-        credit: 185000,
-        entity: 'personal',
-        aiConfidence: 97,
-        isTransfer: false,
-      },
-    }),
-    prisma.transaction.create({
-      data: {
-        id: 't2_feb',
-        date: '20 Feb',
-        description: 'NEFT CR — ABC Pvt Ltd Salary',
-        account: 'SBI Savings',
-        category: 'Salary',
-        debit: 0,
-        credit: 185000,
-        entity: 'personal',
-        aiConfidence: 97,
-        isTransfer: false,
-      },
-    }),
-    prisma.transaction.create({
-      data: {
-        id: 't2_jan',
-        date: '20 Jan',
-        description: 'NEFT CR — ABC Pvt Ltd Salary',
-        account: 'SBI Savings',
-        category: 'Salary',
-        debit: 0,
-        credit: 185000,
-        entity: 'personal',
-        aiConfidence: 97,
-        isTransfer: false,
-      },
-    }),
-    prisma.transaction.create({
-      data: {
-        id: 't3',
-        date: '19 Mar',
-        description: 'INFOSYS DIVIDEND',
-        account: 'SBI Savings',
-        category: 'Dividend',
-        debit: 0,
-        credit: 3200,
-        entity: 'personal',
-        aiConfidence: 99,
-        isTransfer: false,
-      },
-    }),
-    prisma.transaction.create({
-      data: {
-        id: 't4',
-        date: '18 Mar',
-        description: 'FD INT — IDFCF HUF 1234',
-        account: 'IDFC HUF',
-        category: 'FD Interest',
-        debit: 0,
-        credit: 18750,
-        entity: 'huf',
-        aiConfidence: 95,
-        isTransfer: false,
-      },
-    }),
-    prisma.transaction.create({
-      data: {
-        id: 't_adv_tax',
-        date: '14 Mar',
-        description: 'ADVANCE TAX Q4 — SELF',
-        account: 'SBI Savings',
-        category: 'Tax',
-        debit: 75000,
-        credit: 0,
-        entity: 'personal',
-        aiConfidence: 100,
-        isTransfer: false,
-      },
-    }),
-    prisma.transaction.create({
-      data: {
-        id: 't_tds_fd',
-        date: '12 Mar',
-        description: 'TDS DEDUCTED — FD 123',
-        account: 'IDFC HUF',
-        category: 'Tax',
-        debit: 1875,
-        credit: 0,
-        entity: 'huf',
-        aiConfidence: 100,
-        isTransfer: false,
-      },
-    }),
-    prisma.transaction.create({
-      data: {
-        id: 't5',
-        date: '17 Mar',
-        description: 'TATA POWER ELECTRIC',
-        account: 'IDFC Personal',
-        category: 'Utilities',
-        debit: 4820,
-        credit: 0,
-        entity: 'personal',
-        aiConfidence: 72,
-        isTransfer: false,
-      },
-    }),
-    prisma.transaction.create({
-      data: {
-        id: 't6',
-        date: '16 Mar',
-        description: 'Auto FD Created',
-        account: 'IDFC Firm',
-        category: 'FD Creation',
-        debit: 200000,
-        credit: 0,
-        entity: 'firm',
-        aiConfidence: 99,
-        isTransfer: false,
-      },
-    }),
-    prisma.transaction.create({
-      data: {
-        id: 't7',
-        date: '15 Mar',
-        description: 'NEFT — BOB to IDFC Transfer',
-        account: 'BOB Savings',
-        category: 'Transfer',
-        debit: 50000,
-        credit: 0,
-        entity: 'personal',
-        aiConfidence: 96,
-        isTransfer: true,
-      },
-    }),
-    prisma.transaction.create({
-      data: {
-        id: 't8',
-        date: '15 Mar',
-        description: 'NEFT Received from BOB',
-        account: 'IDFC Personal',
-        category: 'Transfer',
-        debit: 0,
-        credit: 50000,
-        entity: 'personal',
-        aiConfidence: 96,
-        isTransfer: true,
-      },
-    }),
-  ])
-
-  console.log(`Created ${transactions.length} transactions`)
+        id: tx.id,
+        date: tx.date,
+        description: tx.description,
+        account: tx.account,
+        category: tx.category,
+        debit: tx.debit || 0,
+        credit: tx.credit || 0,
+        entity: tx.entity,
+        aiConfidence: tx.aiConfidence || 100,
+        isTransfer: tx.isTransfer || false,
+      }
+    })
+  }
+  console.log(`✅ ${dbJson.transactions.length} transactions seeded`)
 
   // Seed MF Holdings
-  const mfHoldings = await Promise.all([
-    prisma.mFHolding.create({
+  console.log('📈 Seeding mutual fund holdings...')
+  for (const mf of dbJson.mfHoldings) {
+    await prisma.mFHolding.create({
       data: {
-        id: 'mf1',
-        name: 'Parag Parikh Flexi Cap Fund',
-        amc: 'PPFAS',
-        category: 'Flexi Cap',
-        entity: 'personal',
-        units: 245.678,
-        avgNAV: 62.15,
-        currentNAV: 82.45,
-        xirr: 22.4,
-        taxType: 'LTCG',
-      },
-    }),
-    prisma.mFHolding.create({
-      data: {
-        id: 'mf2',
-        name: 'Mirae Asset Large Cap Fund',
-        amc: 'Mirae Asset',
-        category: 'Large Cap',
-        entity: 'personal',
-        units: 1205.34,
-        avgNAV: 84.76,
-        currentNAV: 105.23,
-        xirr: 16.8,
-        taxType: 'LTCG',
-      },
-    }),
-    prisma.mFHolding.create({
-      data: {
-        id: 'mf3',
-        name: 'SBI Small Cap Fund',
-        amc: 'SBI MF',
-        category: 'Small Cap',
-        entity: 'huf',
-        units: 456.78,
-        avgNAV: 154.28,
-        currentNAV: 198.45,
-        xirr: 19.2,
-        taxType: 'LTCG',
-      },
-    }),
-    prisma.mFHolding.create({
-      data: {
-        id: 'mf4',
-        name: 'HDFC Mid Cap Opportunities',
-        amc: 'HDFC MF',
-        category: 'Mid Cap',
-        entity: 'huf',
-        units: 789.12,
-        avgNAV: 115.32,
-        currentNAV: 145.67,
-        xirr: 14.1,
-        taxType: 'LTCG',
-      },
-    }),
-  ])
-
-  console.log(`Created ${mfHoldings.length} MF holdings`)
+        id: mf.id,
+        name: mf.name,
+        amc: mf.amc,
+        category: mf.category,
+        entity: mf.entity,
+        units: mf.units,
+        avgNAV: mf.avgNAV,
+        currentNAV: mf.currentNAV,
+        xirr: mf.xirr || 0,
+        taxType: mf.taxType || 'LTCG',
+      }
+    })
+  }
+  console.log(`✅ ${dbJson.mfHoldings.length} MF holdings seeded`)
 
   // Seed Share Holdings
-  const shareHoldings = await Promise.all([
-    prisma.shareHolding.create({
+  console.log('📊 Seeding share holdings...')
+  for (const sh of dbJson.shareHoldings) {
+    await prisma.shareHolding.create({
       data: {
-        id: 'sh1',
-        symbol: 'INFY',
-        company: 'Infosys Ltd',
-        exchange: 'NSE',
-        sector: 'IT',
-        entity: 'personal',
-        qty: 50,
-        avgPrice: 1450,
-        cmp: 1685,
-        dividendFY: 6400,
-        taxType: 'LTCG',
-      },
-    }),
-    prisma.shareHolding.create({
-      data: {
-        id: 'sh2',
-        symbol: 'TCS',
-        company: 'Tata Consultancy Services',
-        exchange: 'NSE',
-        sector: 'IT',
-        entity: 'personal',
-        qty: 25,
-        avgPrice: 3200,
-        cmp: 3845,
-        dividendFY: 5500,
-        taxType: 'LTCG',
-      },
-    }),
-    prisma.shareHolding.create({
-      data: {
-        id: 'sh3',
-        symbol: 'HDFCBANK',
-        company: 'HDFC Bank Ltd',
-        exchange: 'NSE',
-        sector: 'Banking',
-        entity: 'personal',
-        qty: 100,
-        avgPrice: 1450,
-        cmp: 1720,
-        dividendFY: 7200,
-        taxType: 'LTCG',
-      },
-    }),
-    prisma.shareHolding.create({
-      data: {
-        id: 'sh4',
-        symbol: 'RELIANCE',
-        company: 'Reliance Industries Ltd',
-        exchange: 'NSE',
-        sector: 'Energy',
-        entity: 'personal',
-        qty: 30,
-        avgPrice: 2200,
-        cmp: 2890,
-        dividendFY: 3300,
-        taxType: 'STCG',
-      },
-    }),
-  ])
+        id: sh.id,
+        symbol: sh.symbol,
+        company: sh.company,
+        exchange: sh.exchange || 'NSE',
+        sector: sh.sector || 'Other',
+        entity: sh.entity,
+        qty: sh.qty,
+        avgPrice: sh.avgPrice,
+        cmp: sh.cmp,
+        dividendFY: sh.dividendFY || 0,
+        taxType: sh.taxType || 'LTCG',
+      }
+    })
+  }
+  console.log(`✅ ${dbJson.shareHoldings.length} share holdings seeded`)
 
-  console.log(`Created ${shareHoldings.length} share holdings`)
+  // Seed Settings (LTCG)
+  console.log('⚙️  Seeding settings...')
+  await prisma.appSettings.create({
+    data: { key: 'ltcgBooked', value: String(dbJson.ltcgBooked || 0) }
+  })
+  await prisma.appSettings.create({
+    data: { key: 'ltcgLimit', value: String(dbJson.ltcgLimit || 125000) }
+  })
+  console.log('✅ Settings seeded')
 
-  // Seed App Settings
-  const settings = await Promise.all([
-    prisma.appSettings.create({
-      data: {
-        key: 'demoMode',
-        value: 'true',
-      },
-    }),
-    prisma.appSettings.create({
-      data: {
-        key: 'ltcgBooked',
-        value: '43000',
-      },
-    }),
-    prisma.appSettings.create({
-      data: {
-        key: 'ltcgLimit',
-        value: '125000',
-      },
-    }),
-  ])
-
-  console.log(`Created ${settings.length} app settings`)
-
-  console.log('Seeding completed successfully!')
+  console.log('\n🎉 Seed completed successfully!')
+  console.log('Summary:')
+  console.log(`  - Accounts: ${dbJson.accounts.length}`)
+  console.log(`  - Fixed Deposits: ${dbJson.fixedDeposits.length}`)
+  console.log(`  - Transactions: ${dbJson.transactions.length}`)
+  console.log(`  - MF Holdings: ${dbJson.mfHoldings.length}`)
+  console.log(`  - Share Holdings: ${dbJson.shareHoldings.length}`)
 }
 
 main()
   .catch((e) => {
-    console.error(e)
+    console.error('❌ Seed failed:', e)
     process.exit(1)
   })
   .finally(async () => {
